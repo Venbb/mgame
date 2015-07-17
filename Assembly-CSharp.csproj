@@ -254,7 +254,10 @@
      <None Include="Assets\NGUI\Examples\Models\Orc Armor\Orc Armor.shader" />
      <None Include="Assets\NGUI\Examples\Resources\Localization.txt" />
  <Reference Include="MEngine">
- <HintPath>/Users/niko/u3d/mgame/Assets/Scripts/MEngine.dll</HintPath>
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Scripts/MEngine.dll</HintPath>
+ </Reference>
+ <Reference Include="LitJson">
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/LitJson.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
