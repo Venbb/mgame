@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace Vgame.ToolKit
 {
-	public static class ExcelToCSV
+	public static class ExcelTools
 	{
 		/// <summary>
 		/// 逗号分隔符
@@ -28,7 +28,11 @@ namespace Vgame.ToolKit
 		/// <summary>
 		/// 文件保存扩展名
 		/// </summary>
-		const string SAVE_EXT = ".csv.baytes";
+		static string SAVE_EXT = ".json.baytes";
+		/// <summary>
+		/// 文件存储目录名
+		/// </summary>
+		static string SAVE_DIR_NAME = "Json";
 		/// <summary>
 		/// 匹配Excel配置文件
 		/// </summary>
@@ -37,8 +41,24 @@ namespace Vgame.ToolKit
 		static DataSet ds = new DataSet ();
 
 		[MenuItem ("Vgame/ToolKit/Excel To CSV")]
-		static void OnBegin ()
+		static void ExcelToCSV ()
 		{
+			SAVE_EXT = ".csv.baytes";
+			SAVE_DIR_NAME = "CSV";
+			OnBegin (ConvertToCSV);
+		}
+
+		[MenuItem ("Vgame/ToolKit/Excel To JSON")]
+		static void ExcelToJSON ()
+		{
+			SAVE_EXT = ".json.baytes";
+			SAVE_DIR_NAME = "Json";
+			OnBegin (ConvertToJSON);
+		}
+
+		static void OnBegin (CallBackWithParams<DataTable,List<string>> ckFun)
+		{
+			if (ckFun == null) return;
 			ClearData ();
 			List<string> readPathes = GetExcelPathes ();
 			if (readPathes.Count == 0)
@@ -49,7 +69,7 @@ namespace Vgame.ToolKit
 			List<string> writePathes = GetWriteDirectories ();
 			if (writePathes.Count == 0)
 			{
-				Debug.LogError ("未能找到CSV输出路径，请确保在Assets文件夹下面包含有“Vdata/CSV”文件夹。");
+				Debug.LogError ("未能找到" + SAVE_DIR_NAME + "输出路径，请确保在Assets文件夹下面包含有“Vdata/" + SAVE_DIR_NAME + "”文件夹。");
 				return;
 			}
 			List<DataTable> tables = new List<DataTable> ();
@@ -60,7 +80,7 @@ namespace Vgame.ToolKit
 
 			foreach (DataTable table in tables)
 			{
-				ConvertToCSV (table, writePathes);
+				ckFun (table, writePathes);
 			}
 			AssetDatabase.Refresh ();
 		}
@@ -119,6 +139,39 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
+		/// 获取数据输出路径
+		/// </summary>
+		/// <returns>The write pathes.</returns>
+		static List<string> GetWriteDirectories ()
+		{
+			List<string> pathes = new List<string> ();
+			string[] files = Directory.GetDirectories (Application.dataPath, SAVE_DIR_NAME, SearchOption.AllDirectories);
+			foreach (string file in files)
+			{
+				if (!file.Contains ("Vdata/" + SAVE_DIR_NAME)) continue;
+				pathes.Add (file);
+			}
+			return pathes;
+		}
+
+		/// <summary>
+		/// 清除JSON
+		/// </summary>
+		static void ClearData ()
+		{
+			List<string> directories = GetWriteDirectories ();
+			foreach (string dir in directories)
+			{
+				string[] pathes = Directory.GetFiles (dir);
+				foreach (string path in pathes)
+				{
+					Debug.Log ("删除:" + path);
+					File.Delete (path);	
+				}
+			}
+		}
+
+		/// <summary>
 		/// 转换成CSV
 		/// </summary>
 		/// <param name="table">Table.</param>
@@ -149,92 +202,61 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
-		/// 获取数据输出路径
+		/// 转换成JSON
 		/// </summary>
-		/// <returns>The write pathes.</returns>
-		static List<string> GetWriteDirectories ()
+		/// <param name="table">Table.</param>
+		/// <param name="pathes">Pathes.</param>
+		static void ConvertToJSON (DataTable table, List<string> pathes)
 		{
-			List<string> pathes = new List<string> ();
-			string[] files = Directory.GetDirectories (Application.dataPath, "CSV", SearchOption.AllDirectories);
-			foreach (string file in files)
+			int rows = table.Rows.Count;
+			int columus = table.Columns.Count;
+			string[] fields = new string[columus];
+			StringBuilder sb = new StringBuilder ();
+			sb.AppendLine ("[");
+			for (int i = 1; i < rows; i++)
 			{
-				if (!file.Contains ("Vdata/CSV")) continue;
-				pathes.Add (file);
+				if (table.Rows [i].IsNull (0)) continue;
+				if (i == 1)
+				{
+					for (int j = 0; j < columus; j++)
+					{
+						fields.SetValue (table.Rows [i] [j].ToString (), j);
+					}
+					continue;
+				}
+				sb.AppendLine (" {");
+				for (int j = 0; j < columus; j++)
+				{
+					object o = table.Rows [i] [j];
+					int a;
+					Debug.Log (int.TryParse (o.ToString (), out a));
+					Debug.Log ("...." + a);
+					Debug.Log (o + "================" + (o is string));
+					if (o is string)
+					{
+						sb.AppendLine (string.Format ("  \"{0}\":\"{1}\"{2}", fields [j], o, (j + 1 < columus ? "," : "")));
+
+					}
+					else
+					{
+						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], table.Rows [i] [j], (j + 1 < columus ? "," : "")));
+
+					}
+					Debug.Log (fields [j] + ":" + table.Rows [i] [j].GetType ());
+
+				}
+				sb.AppendLine (i + 1 < rows ? " }," : " }");
 			}
-			return pathes;
+			sb.Append ("]");
+			foreach (string str in pathes)
+			{
+				string path = Path.Combine (str, table.TableName + SAVE_EXT);
+				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
+				sw.Write (sb);
+				sw.Close ();
+				Debug.Log ("生成JSON成功:" + path);
+			}
 		}
 
-		/// <summary>
-		/// 清除CSV
-		/// </summary>
-		static void ClearData ()
-		{
-			List<string> directories = GetWriteDirectories ();
-			foreach (string dir in directories)
-			{
-				string[] pathes = Directory.GetFiles (dir);
-				foreach (string path in pathes)
-				{
-					Debug.Log ("删除:" + path);
-					File.Delete (path);	
-				}
-			}
-		}
-		//		void ConvertToJSON (DataTable table)
-		//		{
-		//			int rows = table.Rows.Count;
-		//			int columus = table.Columns.Count;
-		//			string[] fields = new string[columus];
-		//			StringBuilder sb = new StringBuilder ();
-		//			sb.AppendLine ("[");
-		//			for (int i = 1; i < rows; i++)
-		//			{
-		//				if (table.Rows [i].IsNull (0)) continue;
-		//				if (i == 1)
-		//				{
-		//					for (int j = 0; j < columus; j++)
-		//					{
-		//						fields.SetValue (table.Rows [i] [j].ToString (), j);
-		//					}
-		//					continue;
-		//				}
-		//				sb.AppendLine (" {");
-		//				for (int j = 0; j < columus; j++)
-		//				{
-		//					object o = table.Rows [i] [j];
-		//					Debug.Log (o + "================" + (o is string));
-		//					if (o is string)
-		//					{
-		//						sb.AppendLine (string.Format ("  \"{0}\":\"{1}\"{2}", fields [j], o, (j + 1 < columus ? "," : "")));
-		//
-		//					}
-		//					else
-		//					{
-		//						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], table.Rows [i] [j], (j + 1 < columus ? "," : "")));
-		//
-		//					}
-		//					Debug.Log (fields [j] + ":" + table.Rows [i] [j].GetType ());
-		//
-		//				}
-		//				sb.AppendLine (i + 1 < rows ? " }," : " }");
-		//			}
-		//			sb.Append ("]");
-		//			if (!Directory.Exists (writePath))
-		//			{
-		//				Directory.CreateDirectory (writePath);
-		//			}
-		//			string path = Path.Combine (writePath, table.TableName + ".json.baytes");
-		//			StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
-		//			sw.Write (sb);
-		//			sw.Close ();
-		//			JsonData jd = JsonMapper.ToObject (sb.ToString ());
-		//			Debug.Log (jd);
-		////		List<Mouse> mouses = JsonMapper.ToObject<List<Mouse>> (sb.ToString ());
-		////		foreach (Mouse m in mouses)
-		////		{
-		////			Debug.Log (m.name);
-		////		}
-		//			Debug.Log ("生成JSON成功:" + path);
-		//		}
 	}
 }

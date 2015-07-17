@@ -184,6 +184,7 @@
      <Compile Include="Assets\Scripts\Begin.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Test.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Vgame.cs" />
      <Compile Include="Assets\uLua\Core\CheckType.cs" />
      <Compile Include="Assets\uLua\Core\GenerateEventAssembly.cs" />
      <Compile Include="Assets\uLua\Core\Lua.cs" />
