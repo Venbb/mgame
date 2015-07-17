@@ -1,13 +1,15 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vgame/Editor/XUPorter/XCPlist.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vgame/Editor/XUPorter/AppIcon/Contents.json">
     <Files>
       <File FileName="Assets/Scripts/GameController.cs" Line="34" Column="84" />
       <File FileName="Assets/uLua/Core/Metatables.cs" Line="41" Column="39" />
       <File FileName="Assets/uLua/Core/ObjectTranslator.cs" Line="38" Column="4" />
       <File FileName="Assets/Vgame/Scripts/Editor/Toolkit/ExcelTools.cs" Line="253" Column="66" />
       <File FileName="Assets/Vgame/Scripts/Vgame.cs" Line="5" Column="40" />
-      <File FileName="Assets/Vgame/Editor/XUPorter/XCPlist.cs" Line="5" Column="1" />
+      <File FileName="Assets/Vgame/Editor/XUPorter/XCPlist.cs" Line="6" Column="34" />
+      <File FileName="Assets/Vgame/Editor/XUPorter/XClass.cs" Line="49" Column="4" />
+      <File FileName="Assets/Vgame/Editor/XUPorter/AppIcon/Contents.json" Line="78" Column="39" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

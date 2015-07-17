@@ -180,6 +180,7 @@
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 1.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 1.shader" />
+     <None Include="Assets\Vgame\Scripts\NetWork\Loader\LoaderEventArg.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text.shader" />
@@ -198,14 +199,14 @@
  <Reference Include="MEngine">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Scripts/MEngine.dll</HintPath>
  </Reference>
+ <Reference Include="LitJson">
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/LitJson.dll</HintPath>
+ </Reference>
  <Reference Include="Excel">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/Excel.dll</HintPath>
  </Reference>
  <Reference Include="ICSharpCode.SharpZipLib">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/ICSharpCode.SharpZipLib.dll</HintPath>
- </Reference>
- <Reference Include="LitJson">
- <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/LitJson.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/System.Data.dll</HintPath>
