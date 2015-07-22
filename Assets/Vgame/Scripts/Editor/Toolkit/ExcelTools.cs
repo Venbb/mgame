@@ -366,7 +366,7 @@ namespace Vgame.ToolKit
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("using System.Collections.Generic;");
 			string className = table.TableName;
-			className = "V" + className;
+			ToUpperpFirstChar (ref className);
 			sb.AppendLine ("public class " + className);
 			sb.AppendLine ("{");
 			for (int i = 0; i < fields.Length; i++)
@@ -376,7 +376,9 @@ namespace Vgame.ToolKit
 				{
 					type = "string";
 				}
-				sb.AppendLine ("public " + type + " _" + fields [i] + ";");	
+				string field = fields [i];
+				ToUpperpFirstChar (ref field);
+				sb.AppendLine (CHAR_TAB + "public " + type + " " + field + ";");	
 			}
 			sb.Append ("}");
 			foreach (string str in pathes)
@@ -456,6 +458,22 @@ namespace Vgame.ToolKit
 				types.SetValue (table.Rows [2] [i].ToString (), i);
 			}
 			return types;
+		}
+
+		/// <summary>
+		/// 大写首写字母
+		/// </summary>
+		/// <returns>The upperp first char.</returns>
+		/// <param name="str">String.</param>
+		static string ToUpperpFirstChar (ref string str)
+		{
+			if (string.IsNullOrEmpty (str)) return "";
+			char c1 = char.ToUpper (str [0]);
+			if (str.Length > 1)
+			{
+				str = c1 + str.Substring (1);
+			}
+			return str;
 		}
 	}
 }

@@ -1,10 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vgame/Scripts/VEntites/Vmouse.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vgame/Scripts/VEntites/Mouse.cs">
     <Files>
-      <File FileName="Assets/Vgame/Scripts/Editor/Toolkit/ExcelTools.cs" Line="376" Column="6" />
+      <File FileName="Assets/Vgame/Scripts/Editor/Toolkit/ExcelTools.cs" Line="370" Column="48" />
       <File FileName="Assets/Vgame/Scripts/Vgame.cs" Line="8" Column="2" />
-      <File FileName="Assets/Vgame/Scripts/VEntites/Vmouse.cs" Line="12" Column="2" />
+      <File FileName="Assets/Vgame/Scripts/VEntites/Mouse.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
