@@ -364,10 +364,24 @@ namespace Vgame.ToolKit
 			string[] fieldTypes = ReadFieldTypes (table);
 
 			StringBuilder sb = new StringBuilder ();
-
+			sb.AppendLine ("using System.Collections.Generic;");
+			string className = table.TableName;
+			className = "V" + className;
+			sb.AppendLine ("public class " + className);
+			sb.AppendLine ("{");
+			for (int i = 0; i < fields.Length; i++)
+			{
+				string type = fieldTypes [i];
+				if (type.Equals ("json"))
+				{
+					type = "string";
+				}
+				sb.AppendLine ("public " + type + " _" + fields [i] + ";");	
+			}
+			sb.Append ("}");
 			foreach (string str in pathes)
 			{
-				string path = Path.Combine (str, table.TableName + SAVE_EXT);
+				string path = Path.Combine (str, className + SAVE_EXT);
 				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
 				sw.Write (sb);
 				sw.Close ();

@@ -193,6 +193,7 @@
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitTransaction.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\demo\StoreKitEventListener.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\demo\StoreKitGUIManager.cs" />
+     <Compile Include="Assets\Vgame\Scripts\VEntites\Vmouse.cs" />
      <Compile Include="Assets\Vgame\Scripts\Vgame.cs" />
      <Compile Include="Assets\uLua\Core\CheckType.cs" />
      <Compile Include="Assets\uLua\Core\GenerateEventAssembly.cs" />
