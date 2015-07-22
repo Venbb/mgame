@@ -56,6 +56,36 @@ namespace Vgame.ToolKit
 			OnBegin (ConvertToJSON);
 		}
 
+		[MenuItem ("Vgame/ToolKit/Excel To Class")]
+		static void ExcelToClass ()
+		{
+			SAVE_EXT = ".cs";
+			SAVE_DIR_NAME = "VEntites";
+			ClearClassData ();
+			List<string> readPathes = GetExcelPathes ();
+			if (readPathes.Count == 0)
+			{
+				Debug.LogError ("未能找到Excel文件路径，请确保在Assets文件夹下面包含有正确Excel文件格式的“Vdata/Excel”文件夹。");
+				return;
+			}
+			List<DataTable> tables = new List<DataTable> ();
+			foreach (string path in readPathes)
+			{
+				tables.AddRange (GetExcelData (path));
+			}
+			List<string> writePathes = GetWriteClassDirectories ();
+			if (writePathes.Count == 0)
+			{
+				Debug.LogError ("未能找到" + SAVE_DIR_NAME + "输出路径，请确保在Assets文件夹下面包含有“Scripts/" + SAVE_DIR_NAME + "”文件夹。");
+				return;
+			}
+			foreach (DataTable table in tables)
+			{
+				ConvertToClass (table, writePathes);
+			}
+			AssetDatabase.Refresh ();
+		}
+
 		static void OnBegin (CallBackWithParams<DataTable,List<string>> ckFun)
 		{
 			if (ckFun == null) return;
@@ -155,7 +185,23 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
-		/// 清除JSON
+		/// 获取生成的C#实体类保存路径
+		/// </summary>
+		/// <returns>The class directories.</returns>
+		static List<string> GetWriteClassDirectories ()
+		{
+			List<string> pathes = new List<string> ();
+			string[] files = Directory.GetDirectories (Application.dataPath, SAVE_DIR_NAME, SearchOption.AllDirectories);
+			foreach (string file in files)
+			{
+				if (!file.Contains ("Scripts/" + SAVE_DIR_NAME)) continue;
+				pathes.Add (file);
+			}
+			return pathes;
+		}
+
+		/// <summary>
+		/// 清除生成的数据
 		/// </summary>
 		static void ClearData ()
 		{
@@ -166,6 +212,23 @@ namespace Vgame.ToolKit
 				foreach (string path in pathes)
 				{
 					Debug.Log ("删除:" + path);
+					File.Delete (path);	
+				}
+			}
+		}
+
+		/// <summary>
+		/// 清除生成的实体类
+		/// </summary>
+		static void ClearClassData ()
+		{
+			List<string> directories = GetWriteClassDirectories ();
+			foreach (string dir in directories)
+			{
+				string[] pathes = Directory.GetFiles (dir);
+				foreach (string path in pathes)
+				{
+					Debug.Log ("删除Class:" + path);
 					File.Delete (path);	
 				}
 			}
@@ -210,40 +273,68 @@ namespace Vgame.ToolKit
 		{
 			int rows = table.Rows.Count;
 			int columus = table.Columns.Count;
-			string[] fields = new string[columus];
+			//字段名
+			string[] fields = ReadFields (table);
+			//字段类型
+			string[] fieldTypes = ReadFieldTypes (table);
+
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("[");
-			for (int i = 1; i < rows; i++)
+			for (int i = 3; i < rows; i++)
 			{
-				if (table.Rows [i].IsNull (0)) continue;
-				if (i == 1)
-				{
-					for (int j = 0; j < columus; j++)
-					{
-						fields.SetValue (table.Rows [i] [j].ToString (), j);
-					}
-					continue;
-				}
 				sb.AppendLine (" {");
 				for (int j = 0; j < columus; j++)
 				{
-					object o = table.Rows [i] [j];
-					int a;
-					Debug.Log (int.TryParse (o.ToString (), out a));
-					Debug.Log ("...." + a);
-					Debug.Log (o + "================" + (o is string));
-					if (o is string)
+					string valueStr = table.Rows [i] [j].ToString ();
+					string type = fieldTypes [j];
+					if (type.Equals ("string"))
 					{
-						sb.AppendLine (string.Format ("  \"{0}\":\"{1}\"{2}", fields [j], o, (j + 1 < columus ? "," : "")));
-
+						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], "\"" + valueStr + "\"", (j + 1 < columus ? "," : "")));
 					}
 					else
 					{
-						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], table.Rows [i] [j], (j + 1 < columus ? "," : "")));
+						switch (type)
+						{
+						case "int":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (valueStr.Contains (".")) valueStr = valueStr.Substring (0, 1);
+							}
+							break;
+						case "float":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (!valueStr.Contains (".")) valueStr += ".0";
+							}
+							break;
+						case "double":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (!valueStr.Contains (".")) valueStr += ".0";
+							}
+							break;
+						default:
+							if (string.IsNullOrEmpty (valueStr)) valueStr = "null";
+							break;
+						}
+						if (string.IsNullOrEmpty (valueStr))
+						{
 
+						}
+						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], valueStr, (j + 1 < columus ? "," : "")));
 					}
-					Debug.Log (fields [j] + ":" + table.Rows [i] [j].GetType ());
-
 				}
 				sb.AppendLine (i + 1 < rows ? " }," : " }");
 			}
@@ -258,5 +349,99 @@ namespace Vgame.ToolKit
 			}
 		}
 
+		/// <summary>
+		/// 生成实体类
+		/// </summary>
+		/// <param name="table">Table.</param>
+		/// <param name="pathes">Pathes.</param>
+		static void ConvertToClass (DataTable table, List<string> pathes)
+		{
+			int rows = table.Rows.Count;
+			int columus = table.Columns.Count;
+			//字段名
+			string[] fields = ReadFields (table);
+			//字段类型
+			string[] fieldTypes = ReadFieldTypes (table);
+
+			StringBuilder sb = new StringBuilder ();
+
+			foreach (string str in pathes)
+			{
+				string path = Path.Combine (str, table.TableName + SAVE_EXT);
+				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
+				sw.Write (sb);
+				sw.Close ();
+				Debug.Log ("生成Class成功:" + path);
+			}
+		}
+
+		/// <summary>
+		/// 读取表字段描述
+		/// </summary>
+		/// <returns>The field DES.</returns>
+		/// <param name="table">Table.</param>
+		static string[] ReadFieldDes (DataTable table)
+		{
+			int columus = table.Columns.Count;
+			//字段描述
+			string[] fieldDecs = new string[columus];
+			//读取字段描述
+			for (int i = 0; i < columus; i++)
+			{
+				if (table.Rows [0].IsNull (0))
+				{
+					Debug.LogError ("读取表字段描述出错:" + table.TableName);
+					return null;	
+				}
+				fieldDecs.SetValue (table.Rows [0] [i].ToString (), i);
+			}
+			return fieldDecs;
+		}
+
+		/// <summary>
+		/// 读取字段名
+		/// </summary>
+		/// <returns>The fields.</returns>
+		/// <param name="table">Table.</param>
+		static string[] ReadFields (DataTable table)
+		{
+			int columus = table.Columns.Count;
+			//字段描述
+			string[] fields = new string[columus];
+			//读取字段描述
+			for (int i = 0; i < columus; i++)
+			{
+				if (table.Rows [1].IsNull (0))
+				{
+					Debug.LogError ("读取字段名出错:" + table.TableName);
+					return null;	
+				}
+				fields.SetValue (table.Rows [1] [i].ToString (), i);
+			}
+			return fields;
+		}
+
+		/// <summary>
+		/// 读取字段类型
+		/// </summary>
+		/// <returns>The field types.</returns>
+		/// <param name="table">Table.</param>
+		static string[] ReadFieldTypes (DataTable table)
+		{
+			int columus = table.Columns.Count;
+			//字段描述
+			string[] types = new string[columus];
+			//读取字段描述
+			for (int i = 0; i < columus; i++)
+			{
+				if (table.Rows [2].IsNull (0))
+				{
+					Debug.LogError ("读取字段类型出错:" + table.TableName);
+					return null;	
+				}
+				types.SetValue (table.Rows [2] [i].ToString (), i);
+			}
+			return types;
+		}
 	}
 }

@@ -184,16 +184,6 @@
      <Compile Include="Assets\Scripts\Begin.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Test.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\BaseNet.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\BaseNetWork.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\CUtils.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\CryptographHelper.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\CDependencies.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\CLoader.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\CQueueRequest.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\CRequest.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\MultipleLoader.cs" />
-     <Compile Include="Assets\Vgame\Scripts\NetWork\Loader\ResourceCache.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\SDKHandler.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitBinding.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitDownload.cs" />
@@ -258,7 +248,6 @@
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 1.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 1.shader" />
-     <None Include="Assets\Vgame\Scripts\NetWork\Loader\LoaderEventArg.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text.shader" />
@@ -279,6 +268,9 @@
  </Reference>
  <Reference Include="LitJson">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/LitJson.dll</HintPath>
+ </Reference>
+ <Reference Include="P31RestKit">
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/P31RestKit.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
