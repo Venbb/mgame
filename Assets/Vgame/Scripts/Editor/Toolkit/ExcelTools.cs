@@ -358,6 +358,8 @@ namespace Vgame.ToolKit
 		{
 			int rows = table.Rows.Count;
 			int columus = table.Columns.Count;
+			// 字段描述
+			string[] fieldDes = ReadFieldDes (table);
 			//字段名
 			string[] fields = ReadFields (table);
 			//字段类型
@@ -366,19 +368,22 @@ namespace Vgame.ToolKit
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("using System.Collections.Generic;");
 			string className = table.TableName;
-			ToUpperpFirstChar (ref className);
+			StringTools.ToUpperFirstChar (ref className);
 			sb.AppendLine ("public class " + className);
 			sb.AppendLine ("{");
 			for (int i = 0; i < fields.Length; i++)
 			{
+				sb.AppendLine ("\t/// <summary>");
+				sb.AppendLine ("\t/// " + fieldDes [i]);
+				sb.AppendLine ("\t/// </summary>");
 				string type = fieldTypes [i];
 				if (type.Equals ("json"))
 				{
 					type = "string";
 				}
 				string field = fields [i];
-				ToUpperpFirstChar (ref field);
-				sb.AppendLine (CHAR_TAB + "public " + type + " " + field + ";");	
+				StringTools.ToUpperFirstChar (ref field);
+				sb.AppendLine ("\tpublic " + type + " " + field + ";");	
 			}
 			sb.Append ("}");
 			foreach (string str in pathes)
@@ -458,22 +463,6 @@ namespace Vgame.ToolKit
 				types.SetValue (table.Rows [2] [i].ToString (), i);
 			}
 			return types;
-		}
-
-		/// <summary>
-		/// 大写首写字母
-		/// </summary>
-		/// <returns>The upperp first char.</returns>
-		/// <param name="str">String.</param>
-		static string ToUpperpFirstChar (ref string str)
-		{
-			if (string.IsNullOrEmpty (str)) return "";
-			char c1 = char.ToUpper (str [0]);
-			if (str.Length > 1)
-			{
-				str = c1 + str.Substring (1);
-			}
-			return str;
 		}
 	}
 }
