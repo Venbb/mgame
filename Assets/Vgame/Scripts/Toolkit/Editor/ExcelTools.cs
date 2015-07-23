@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEditor;
 using System.IO;
 using System.Data;
 using Excel;
 using System.Text;
 using System.Text.RegularExpressions;
-using LitJson;
 using System.Collections.Generic;
 
-namespace Vgame.ToolKit
+namespace Vgame.ToolKit.Editor
 {
 	public static class ExcelTools
 	{
@@ -26,64 +24,76 @@ namespace Vgame.ToolKit
 		/// </summary>
 		const char CHAR_TAB = '\t';
 		/// <summary>
+		/// Excel扩展名xlsx
+		/// </summary>
+		const string EX_XLSX = "^.*.(?i)xlsx$";
+		/// <summary>
+		/// Excel扩展名xls
+		/// </summary>
+		const string EX_XLS = "^.*.(?i)xls$";
+		/// <summary>
+		/// 保存为JSON数据格式的扩展名
+		/// </summary>
+		const string SAVE_EXT_JSON = ".json.baytes";
+		/// <summary>
+		/// 保存为CSV数据格式的扩展名
+		/// </summary>
+		const string SAVE_EXT_CSV = ".csv.baytes";
+		/// <summary>
+		/// 生成的实体类扩展名
+		/// </summary>
+		const string SAVE_EXT_CLASS = ".cs";
+		/// <summary>
+		/// 读取EXCEl的文件路径片段
+		/// </summary>
+		const string READ_DIR_NAME_EXCEL = "Vdata/Excel";
+		/// <summary>
+		/// 保存JSON数据的文件路径片段
+		/// </summary>
+		const string SAVE_DIR_NAME_JSON = "Vdata/Json";
+		/// <summary>
+		/// 保存CSV数据的文件路径片段
+		/// </summary>
+		const string SAVE_DIR_NAME_CSV = "Vdata/CSV";
+		/// <summary>
+		/// 保存CLASS实体类的文件路径片段
+		/// </summary>
+		const string SAVE_DIR_NAME_CLASS = "Vdata/Classes";
+
+		/// <summary>
 		/// 文件保存扩展名
 		/// </summary>
-		static string SAVE_EXT = ".json.baytes";
+		static string SAVE_EXT = "";
 		/// <summary>
 		/// 文件存储目录名
 		/// </summary>
-		static string SAVE_DIR_NAME = "Json";
-		/// <summary>
-		/// 匹配Excel配置文件
-		/// </summary>
-		static string[] readExt = { "^.*.(?i)xlsx$", "^.*.(?i)xls$" };
+		static string SAVE_DIR_NAME = "";
 
 		static DataSet ds = new DataSet ();
 
 		[MenuItem ("Vgame/ToolKit/Excel To CSV")]
 		static void ExcelToCSV ()
 		{
-			SAVE_EXT = ".csv.baytes";
-			SAVE_DIR_NAME = "CSV";
+			SAVE_EXT = SAVE_EXT_CSV;
+			SAVE_DIR_NAME = SAVE_DIR_NAME_CSV;
 			OnBegin (ConvertToCSV);
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel To JSON")]
 		static void ExcelToJSON ()
 		{
-			SAVE_EXT = ".json.baytes";
-			SAVE_DIR_NAME = "Json";
-			OnBegin (ConvertToJSON);
+			Debug.Log (StringTools.GetStrTypeStr (@"[[1,""]]"));
+//			SAVE_EXT = SAVE_EXT_JSON;
+//			SAVE_DIR_NAME = SAVE_DIR_NAME_JSON;
+//			OnBegin (ConvertToJSON);
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel To Class")]
 		static void ExcelToClass ()
 		{
-			SAVE_EXT = ".cs";
-			SAVE_DIR_NAME = "VEntites";
-			ClearClassData ();
-			List<string> readPathes = GetExcelPathes ();
-			if (readPathes.Count == 0)
-			{
-				Debug.LogError ("未能找到Excel文件路径，请确保在Assets文件夹下面包含有正确Excel文件格式的“Vdata/Excel”文件夹。");
-				return;
-			}
-			List<DataTable> tables = new List<DataTable> ();
-			foreach (string path in readPathes)
-			{
-				tables.AddRange (GetExcelData (path));
-			}
-			List<string> writePathes = GetWriteClassDirectories ();
-			if (writePathes.Count == 0)
-			{
-				Debug.LogError ("未能找到" + SAVE_DIR_NAME + "输出路径，请确保在Assets文件夹下面包含有“Scripts/" + SAVE_DIR_NAME + "”文件夹。");
-				return;
-			}
-			foreach (DataTable table in tables)
-			{
-				ConvertToClass (table, writePathes);
-			}
-			AssetDatabase.Refresh ();
+			SAVE_EXT = SAVE_EXT_CLASS;
+			SAVE_DIR_NAME = SAVE_DIR_NAME_CLASS;
+			OnBegin (ConvertToClass);
 		}
 
 		static void OnBegin (CallBackWithParams<DataTable,List<string>> ckFun)
@@ -99,7 +109,7 @@ namespace Vgame.ToolKit
 			List<string> writePathes = GetWriteDirectories ();
 			if (writePathes.Count == 0)
 			{
-				Debug.LogError ("未能找到" + SAVE_DIR_NAME + "输出路径，请确保在Assets文件夹下面包含有“Vdata/" + SAVE_DIR_NAME + "”文件夹。");
+				Debug.LogError ("未能找到" + SAVE_DIR_NAME + "输出路径，请确保在Assets文件夹下面包含有" + SAVE_DIR_NAME + "”文件夹。");
 				return;
 			}
 			List<DataTable> tables = new List<DataTable> ();
@@ -120,22 +130,7 @@ namespace Vgame.ToolKit
 		/// </summary>
 		static List<string> GetExcelPathes ()
 		{
-			List<string> pathes = new List<string> ();
-			string[] directories = Directory.GetDirectories (Application.dataPath, "Excel", SearchOption.AllDirectories);
-			foreach (string dir in directories)
-			{
-				if (!dir.Contains ("Vdata/Excel")) continue;
-				string[] excels = Directory.GetFiles (dir);
-				foreach (string path in excels)
-				{
-					string regexStr = string.Format (@"{0}", string.Join ("|", readExt));
-					if (Regex.IsMatch (path, regexStr))
-					{
-						pathes.Add (path);
-					}
-				}	
-			}
-			return pathes;
+			return FileTools.GetFiles (READ_DIR_NAME_EXCEL, EX_XLSX, EX_XLS);
 		}
 
 		/// <summary>
@@ -149,11 +144,11 @@ namespace Vgame.ToolKit
 			FileStream stream = File.Open (path, FileMode.Open, FileAccess.Read);
 
 			IExcelDataReader reader = null;
-			if (Regex.IsMatch (path, "^.*.(?i)xlsx$"))
+			if (Regex.IsMatch (path, EX_XLSX))
 			{
 				reader = ExcelReaderFactory.CreateOpenXmlReader (stream);
 			}
-			if (Regex.IsMatch (path, "^.*.(?i)xls$"))
+			if (Regex.IsMatch (path, EX_XLS))
 			{
 				reader = ExcelReaderFactory.CreateBinaryReader (stream);
 			}
@@ -161,7 +156,7 @@ namespace Vgame.ToolKit
 			reader.Close ();	
 
 			int tableCount = ds.Tables.Count;
-			for (int i = 1; i < tableCount; i++)
+			for (int i = 0; i < tableCount; i++)
 			{
 				tables.Add (ds.Tables [i]);
 			}
@@ -174,30 +169,7 @@ namespace Vgame.ToolKit
 		/// <returns>The write pathes.</returns>
 		static List<string> GetWriteDirectories ()
 		{
-			List<string> pathes = new List<string> ();
-			string[] files = Directory.GetDirectories (Application.dataPath, SAVE_DIR_NAME, SearchOption.AllDirectories);
-			foreach (string file in files)
-			{
-				if (!file.Contains ("Vdata/" + SAVE_DIR_NAME)) continue;
-				pathes.Add (file);
-			}
-			return pathes;
-		}
-
-		/// <summary>
-		/// 获取生成的C#实体类保存路径
-		/// </summary>
-		/// <returns>The class directories.</returns>
-		static List<string> GetWriteClassDirectories ()
-		{
-			List<string> pathes = new List<string> ();
-			string[] files = Directory.GetDirectories (Application.dataPath, SAVE_DIR_NAME, SearchOption.AllDirectories);
-			foreach (string file in files)
-			{
-				if (!file.Contains ("Scripts/" + SAVE_DIR_NAME)) continue;
-				pathes.Add (file);
-			}
-			return pathes;
+			return FileTools.GetDirectories (SAVE_DIR_NAME);
 		}
 
 		/// <summary>
@@ -205,32 +177,11 @@ namespace Vgame.ToolKit
 		/// </summary>
 		static void ClearData ()
 		{
-			List<string> directories = GetWriteDirectories ();
-			foreach (string dir in directories)
+			List<string> files = FileTools.GetFiles (GetWriteDirectories ());
+			foreach (string file in files)
 			{
-				string[] pathes = Directory.GetFiles (dir);
-				foreach (string path in pathes)
-				{
-					Debug.Log ("删除:" + path);
-					File.Delete (path);	
-				}
-			}
-		}
-
-		/// <summary>
-		/// 清除生成的实体类
-		/// </summary>
-		static void ClearClassData ()
-		{
-			List<string> directories = GetWriteClassDirectories ();
-			foreach (string dir in directories)
-			{
-				string[] pathes = Directory.GetFiles (dir);
-				foreach (string path in pathes)
-				{
-					Debug.Log ("删除Class:" + path);
-					File.Delete (path);	
-				}
+				Debug.Log ("删除:" + file);
+				File.Delete (file);	
 			}
 		}
 
@@ -356,8 +307,6 @@ namespace Vgame.ToolKit
 		/// <param name="pathes">Pathes.</param>
 		static void ConvertToClass (DataTable table, List<string> pathes)
 		{
-			int rows = table.Rows.Count;
-			int columus = table.Columns.Count;
 			// 字段描述
 			string[] fieldDes = ReadFieldDes (table);
 			//字段名
@@ -367,9 +316,11 @@ namespace Vgame.ToolKit
 
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("using System.Collections.Generic;");
+			sb.AppendLine ("using Vgame.Data;");
+			sb.AppendLine ("");
 			string className = table.TableName;
 			StringTools.ToUpperFirstChar (ref className);
-			sb.AppendLine ("public class " + className);
+			sb.AppendLine ("public class " + className + ":DataBase");
 			sb.AppendLine ("{");
 			for (int i = 0; i < fields.Length; i++)
 			{

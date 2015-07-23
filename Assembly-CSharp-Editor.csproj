@@ -149,7 +149,7 @@
      <Compile Include="Assets\Vgame\Editor\XUPorter\XCProject.cs" />
      <Compile Include="Assets\Vgame\Editor\XUPorter\XClass.cs" />
      <Compile Include="Assets\Vgame\Editor\XUPorter\XCodePostProcess.cs" />
-     <Compile Include="Assets\Vgame\Scripts\Editor\Toolkit\ExcelTools.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\ExcelTools.cs" />
      <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth Cutout.shader" />
      <None Include="Assets\NGUI\ReadMe - 3.8.2.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Masked 1.shader" />
@@ -205,13 +205,13 @@
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/P31RestKit.dll</HintPath>
  </Reference>
  <Reference Include="Excel">
- <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/Excel.dll</HintPath>
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Toolkit/Editor/Dll_Ex/Excel.dll</HintPath>
  </Reference>
  <Reference Include="ICSharpCode.SharpZipLib">
- <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/ICSharpCode.SharpZipLib.dll</HintPath>
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Toolkit/Editor/Dll_Ex/ICSharpCode.SharpZipLib.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
- <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Editor/Dll_Ex/System.Data.dll</HintPath>
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Scripts/Toolkit/Editor/Dll_Ex/System.Data.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>/Applications/Unity4.6.6/Unity.app/Contents/Frameworks/Managed/UnityEditor.Graphs.dll</HintPath>

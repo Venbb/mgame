@@ -184,6 +184,7 @@
      <Compile Include="Assets\Scripts\Begin.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Test.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Data\DataBase.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\SDKHandler.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitBinding.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitDownload.cs" />
@@ -193,8 +194,13 @@
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitTransaction.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\demo\StoreKitEventListener.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\demo\StoreKitGUIManager.cs" />
-     <Compile Include="Assets\Vgame\Scripts\VEntites\Mouse.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\FileTools.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\FunctionEx.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\JSONTools.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\StringTools.cs" />
      <Compile Include="Assets\Vgame\Scripts\Vgame.cs" />
+     <Compile Include="Assets\Vgame\Vdata\Classes\Chat.cs" />
+     <Compile Include="Assets\Vgame\Vdata\Classes\Mouse.cs" />
      <Compile Include="Assets\uLua\Core\CheckType.cs" />
      <Compile Include="Assets\uLua\Core\GenerateEventAssembly.cs" />
      <Compile Include="Assets\uLua\Core\Lua.cs" />
