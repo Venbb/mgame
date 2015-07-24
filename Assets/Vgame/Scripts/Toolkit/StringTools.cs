@@ -2,6 +2,24 @@
 
 namespace Vgame.ToolKit
 {
+	public static class StrType
+	{
+		public const string NONE = "none";
+		public const string INT = "int";
+		public const string STRING = "string";
+		public const string BOOL = "bool";
+		public const string OBJECT = "object";
+		public const string FLOAT = "float";
+		public const string DOUBLE = "double";
+		public const string LONG = "long";
+		public const string ARRAYLIST = "ArrayList";
+		public const string LIST_INT = "list<int>";
+		public const string LIST_STRING = "list<string>";
+		public const string LIST_FLOAT = "list<float>";
+		public const string LIST_DOUBLE = "list<double>";
+		public const string LIST_LONG = "list<long>";
+	}
+
 	public static class StringTools
 	{
 		/// <summary>
@@ -37,28 +55,39 @@ namespace Vgame.ToolKit
 		/// </summary>
 		/// <returns>The string type string.</returns>
 		/// <param name="str">String.</param>
-		public static string GetStrTypeStr (string str)
+		public static string GetStrType (string str)
 		{
-			if (string.IsNullOrEmpty (str)) return "string";
-			if (str.StartsWith ("\"")) return "string";
-			if (str.Equals ("false") || str.Equals ("true")) return "bool";
-			string arrStr = GetListStr (str);
-			if (!string.IsNullOrEmpty (arrStr))
+			if (string.IsNullOrEmpty (str)) return StrType.STRING;
+			if (str.StartsWith ("\"") && str.EndsWith ("\"")) return StrType.STRING;
+			if (str.Equals ("false") || str.Equals ("true")) return StrType.BOOL;
+			string arrTypeStr;
+			if (IsList (str, out arrTypeStr))
 			{
-				
+				return arrTypeStr;
 			}
-			if (str.StartsWith ("{") && str.EndsWith ("}")) return "object";
+			if (str.StartsWith ("{") && str.EndsWith ("}"))
+			{
+				char[] chars = str.ToCharArray ();
+				int a = 0;
+				int b = 0;
+				foreach (char c in chars)
+				{
+					if (c.Equals ('{')) a += 1;
+					if (c.Equals ('}')) b += 1;
+				}
+				if (a == b) return StrType.OBJECT;	
+			}
 			if (str.Contains ("."))
 			{
 				float f;
 				if (float.TryParse (str, out f))
 				{
-					return "float";
+					return StrType.FLOAT;
 				}
 				double d;
 				if (double.TryParse (str, out d))
 				{
-					return "double";
+					return StrType.DOUBLE;
 				}
 			}
 			else
@@ -66,44 +95,110 @@ namespace Vgame.ToolKit
 				int i;
 				if (int.TryParse (str, out i))
 				{
-					return "int";
+					return StrType.INT;
 				}
 			}
-			return "string";
+			return StrType.NONE;
 		}
 
-		public static string GetListStr (string str)
+		/// <summary>
+		/// 是否数组
+		/// </summary>
+		/// <returns><c>true</c> if is list the specified str typeStr; otherwise, <c>false</c>.</returns>
+		/// <param name="str">要判断的字符串</param>
+		/// <param name="type">输出类型的字符串格式</param>
+		public static bool IsList (string str, out string type)
 		{
+			type = StrType.NONE;
 			if (str.StartsWith ("[") && str.EndsWith ("]"))
 			{
-				string t = "";
 				int len = str.Length;
 				if (len > 2)
 				{
-					str = str.Substring (str.IndexOf ("[") + 1, len - 2);
+					char[] chars = str.ToCharArray ();
+					List<string> list_s = new List<string> ();
+					List<int> lis_i = new List<int> ();
+					List<float> list_f = new List<float> ();
+					List<double> list_d = new List<double> ();
+					List<long> list_l = new List<long> ();
 
-					string[] vs = str.Split (',');
-					foreach (string s in vs)
+					string p = "";
+					bool isStr = false;
+					for (int i = 1; i < chars.Length - 1; i++)
 					{
-						string tt = GetStrTypeStr (s);
-						if (string.IsNullOrEmpty (t))
+						char c = chars [i];
+						if (c.Equals ('['))
 						{
-							t = tt;
+							type = StrType.ARRAYLIST;
+							return true;
+						}
+						if (c.Equals (','))
+						{
+							if (isStr)
+							{
+								list_s.Add (p);
+							}
+							else
+							{
+								if (p.Contains ("."))
+								{
+									float f;
+									if (float.TryParse (p, out f))
+									{
+										list_f.Add (f);
+									}
+									double d;
+									if (double.TryParse (p, out d))
+									{
+										list_d.Add (d);
+									}
+								}
+								else
+								{
+									int si;
+									if (int.TryParse (p, out si))
+									{
+										lis_i.Add (si);
+									}
+								}
+							}
+							p = "";
 						}
 						else
 						{
-							if (!t.Equals (tt))
-							{
-								t = "ArrayList";
-								break;
-							}
+							isStr = c.Equals ('\"');
+							p += c;
 						}
 					}
+					if (list_l.Count > 0 && list_d.Count == 0 && list_f.Count == 0 && list_s.Count == 0 && lis_i.Count == 0)
+					{
+						type = StrType.LIST_LONG;
+						return true;
+					}
+					if (list_l.Count == 0 && list_d.Count > 0 && list_f.Count == 0 && list_s.Count == 0 && lis_i.Count == 0)
+					{
+						type = StrType.LIST_DOUBLE;
+						return true;
+					}
+					if (list_l.Count == 0 && list_d.Count == 0 && list_f.Count > 0 && list_s.Count == 0 && lis_i.Count == 0)
+					{
+						type = StrType.LIST_FLOAT;
+						return true;
+					}
+					if (list_l.Count == 0 && list_d.Count == 0 && list_f.Count == 0 && list_s.Count > 0 && lis_i.Count == 0)
+					{
+						type = StrType.LIST_STRING;
+						return true;
+					}
+					if (list_l.Count == 0 && list_d.Count == 0 && list_f.Count == 0 && list_s.Count == 0 && lis_i.Count > 0)
+					{
+						type = StrType.LIST_INT;
+						return true;
+					}
 				}
-				if (string.IsNullOrEmpty (t)) t = "ArrayList";
-				return "List<" + t + ">";	
+				type = StrType.ARRAYLIST;
 			}
-			return "";
+			return false;
 		}
 	}
 }

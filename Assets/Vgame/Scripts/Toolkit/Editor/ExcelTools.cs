@@ -82,7 +82,11 @@ namespace Vgame.ToolKit.Editor
 		[MenuItem ("Vgame/ToolKit/Excel To JSON")]
 		static void ExcelToJSON ()
 		{
-			Debug.Log (StringTools.GetStrTypeStr (@"[[1,""]]"));
+			List<string> keys = new List<string> ();
+			List<string> values = new List<string> ();
+			Debug.Log (JSONTools.IsJson ("{\"name\":\"sjdhajkshdjk\"}", out keys, out values));
+			foreach (string str in keys) Debug.Log ("keys:" + str);
+			foreach (string str in values) Debug.Log ("values:" + str);
 //			SAVE_EXT = SAVE_EXT_JSON;
 //			SAVE_DIR_NAME = SAVE_DIR_NAME_JSON;
 //			OnBegin (ConvertToJSON);

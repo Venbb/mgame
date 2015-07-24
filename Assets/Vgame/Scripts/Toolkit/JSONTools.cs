@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Vgame.ToolKit.Editor
@@ -105,6 +106,137 @@ namespace Vgame.ToolKit.Editor
 			}
 			sb.Append ("}");
 			return sb.ToString ();
+		}
+
+
+		public static bool IsJson (string str, out List<string> keys, out List<string> values)
+		{
+			bool isJson = true;
+			keys = new List<string> ();
+			values = new List<string> ();
+			char[] chars = str.ToCharArray ();
+			int len = chars.Length;
+			if (len < 2) return false;
+			char firstChar = chars [0];
+			char endChar = chars [len - 1];
+			string tmpStr = "";
+			char c = '\0';
+			char cn = '\0';
+			bool getKey = true;
+			string isErrorMs = "";
+			if (firstChar == '{' && endChar == '}')
+			{
+				int i = 1;
+				//当前截取字符串长度
+				int tmpStrLen = 0;
+				while (i < len - 1)
+				{
+					tmpStrLen = tmpStr.Length;
+					//当前字符
+					c = chars [i];
+					//第一个字符应该是引号'\"'
+					if (i == 1)
+					{
+						if (c != '\"')
+						{
+							isErrorMs = "" + c;	
+							break;	
+						}
+						else tmpStr += c;
+						continue;
+					}
+					//下一个字符
+					if (i + 1 < len)
+					{
+						cn = chars [i + 1];
+					}
+					else
+					{
+						cn = '\0';
+					}
+					switch (c)
+					{
+					case '\"':
+						int index = tmpStr.IndexOf ('\"');
+						if (index != 0)
+						{
+							isErrorMs = "key:" + c;
+							break;
+						}
+						if (getKey)
+						{
+							if (tmpStrLen > 1)
+							{
+								if (cn == ':')
+								{
+									keys.Add (tmpStr + c);	
+									getKey = false;
+									i += 2;
+								}
+								else isErrorMs = "" + cn;
+							}
+							else isErrorMs = "key:" + c;
+							tmpStr = "";
+						}
+						else
+						{
+							if (cn == ',')
+							{
+								values.Add (tmpStr);	
+								getKey = true;
+							}
+							else isErrorMs = "" + cn;
+						}
+						break;
+					case ']':
+						if (getKey)
+						{
+							isErrorMs = "" + c;
+							break;
+						}
+						if (tmpStr.IndexOf ('[') != 0)
+						{
+							isErrorMs = "" + c;
+							break;
+						}
+						if (cn == ',')
+						{
+							values.Add (tmpStr);	
+							getKey = true;
+							tmpStr = "";
+						}
+						else isErrorMs = "" + cn;
+						break;
+					case '}':
+						if (getKey)
+						{
+							isErrorMs = "" + c;
+							break;
+						}
+						if (tmpStr.IndexOf ('{') != 0)
+						{
+							isErrorMs = "" + c;
+							break;
+						}
+						if (cn == ',')
+						{
+							values.Add (tmpStr);	
+							getKey = true;
+							tmpStr = "";
+						}
+						else isErrorMs = "" + cn;
+						break;
+					}
+					if (!string.IsNullOrEmpty (isErrorMs)) break;
+				}
+				if (!string.IsNullOrEmpty (isErrorMs))
+				{
+					isJson = false;
+					Debug.LogError ("无效的字符:" + c);
+				}
+			}
+			else isJson = false;
+			return isJson;
 		}
 	}
 }
