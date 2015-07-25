@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using LitJson;
 
 namespace Vgame.ToolKit.Editor
 {
@@ -22,221 +23,82 @@ namespace Vgame.ToolKit.Editor
 				Debug.LogError ("类名不能为空！");
 				return null;
 			}
-			bool isErr = true;
-			if (jsonStr.StartsWith ("{") && jsonStr.EndsWith ("}"))
-			{
-				int len = jsonStr.Length;
-				if (len > 2)
-				{
-					jsonStr = jsonStr.Substring (jsonStr.IndexOf ("{") + 1, len - 2);
-					isErr = false;
-				}
-			}
+			List<string> classes = new List<string> ();
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("public class " + className);
 			sb.AppendLine ("{");
-			string[] jsons = jsonStr.Split (',');
-			foreach (string str in jsons)
+			JsonData jd = JsonMapper.ToObject (jsonStr);
+			foreach (DictionaryEntry de in jd)
 			{
-				if (!Regex.IsMatch (str, "\"(.*?)\":(.*?)"))
-				{
-					isErr = true;
-					break;
-				}
-				string[] kvs = str.Split (':');
-				string key = kvs [0];
-				string value = kvs [1];
+				JsonData value = de.Value as JsonData;
+				string key = de.Key.ToString ();
 				StringTools.ToUpperFirstChar (ref key);
-				string type = "string";
-				if (!value.StartsWith ("\""))
+				if (value.IsInt)
 				{
-					if (value.StartsWith ("["))
-					{
-						value = value.Substring (1, value.Length - 2);	
-						string[] arr = value.Split (',');
-						string at = "";
-						foreach (string a in arr)
-						{
-							if (!a.StartsWith ("\"") && !a.StartsWith ("{") && a.StartsWith ("["))
-							{
-								
-							}
-							else
-							{
-								at = "List<>";
-							}
-						}
-						type = at;
-					}
-					else
-					{
-						if (value.StartsWith ("{"))
-						{
-							string cname = className + "_" + key;
-							string classStr = ToClass (value, cname);
-							if (string.IsNullOrEmpty (classStr))
-							{
-								isErr = true;
-								break;
-							}
-							else
-							{
-								type = cname;
-							}
-						}
-						else
-						{
-							if (value.Contains ("."))
-							{
-								type = "double";
-							}
-							else
-							{
-								type = "int";
-							}
-						}
-					}
+					sb.AppendLine ("\tpublic int " + key + ";");	
 				}
-				sb.AppendLine ("public " + type + " " + key + ";");
+				if (value.IsString)
+				{
+					sb.AppendLine ("\tpublic string " + key + ";");
+				}
+				if (value.IsDouble)
+				{
+					sb.AppendLine ("\tpublic double " + key + ";");
+				}
+				if (value.IsLong)
+				{
+					sb.AppendLine ("\tpublic long " + key + ";");
+				}
+				if (value.IsBoolean)
+				{
+					sb.AppendLine ("\tpublic bool " + key + ";");
+				}
+				if (value.IsObject)
+				{
+					sb.AppendLine ("\tpublic " + (className + "_" + key) + " " + key);
+					classes.Add (ToClass (value.ToJson (), className + "_" + key));
+				}
+				if (value.IsArray)
+				{
+					int count = value.Count;
+					string tstr = "ArrayList";
+					int intNum = 0;
+					int strNum = 0;
+					int doubleNum = 0;
+					int longNum = 0;
+					for (int i = 0; i < count; i++)
+					{
+						JsonData jda = jd [i];
+						if (jda.IsInt)
+						{
+							intNum++;
+							continue;
+						}
+						if (jda.IsString)
+						{
+							strNum++;
+							continue;
+						}
+						if (jda.IsLong)
+						{
+							longNum++;
+							continue;
+						}
+						if (jda.IsDouble) doubleNum++;
+					}
+					if (count != 0 && intNum == count) tstr = "List<int>";
+					if (count != 0 && strNum == count) tstr = "List<string>";
+					if (count != 0 && doubleNum == count) tstr = "List<double>";
+					if (count != 0 && longNum == count) tstr = "List<long>";
+					sb.AppendLine ("\tpublic " + tstr + " " + key + ";");
+				}
 			}
-			if (isErr)
+			sb.AppendLine ("}");
+			foreach (string str in classes)
 			{
-				Debug.Log ("错误的JSON格式！");
-				return null;
+				sb.AppendLine (str);
 			}
-			sb.Append ("}");
 			return sb.ToString ();
-		}
-
-
-		public static bool IsJson (string str, out List<string> keys, out List<string> values)
-		{
-			bool isJson = true;
-			keys = new List<string> ();
-			values = new List<string> ();
-			char[] chars = str.ToCharArray ();
-			int len = chars.Length;
-			if (len < 2) return false;
-			char firstChar = chars [0];
-			char endChar = chars [len - 1];
-			string tmpStr = "";
-			char c = '\0';
-			char cn = '\0';
-			bool getKey = true;
-			string isErrorMs = "";
-			if (firstChar == '{' && endChar == '}')
-			{
-				int i = 1;
-				//当前截取字符串长度
-				int tmpStrLen = 0;
-				while (i < len - 1)
-				{
-					tmpStrLen = tmpStr.Length;
-					//当前字符
-					c = chars [i];
-					//第一个字符应该是引号'\"'
-					if (i == 1)
-					{
-						if (c != '\"')
-						{
-							isErrorMs = "" + c;	
-							break;	
-						}
-						else tmpStr += c;
-						continue;
-					}
-					//下一个字符
-					if (i + 1 < len)
-					{
-						cn = chars [i + 1];
-					}
-					else
-					{
-						cn = '\0';
-					}
-					switch (c)
-					{
-					case '\"':
-						int index = tmpStr.IndexOf ('\"');
-						if (index != 0)
-						{
-							isErrorMs = "key:" + c;
-							break;
-						}
-						if (getKey)
-						{
-							if (tmpStrLen > 1)
-							{
-								if (cn == ':')
-								{
-									keys.Add (tmpStr + c);	
-									getKey = false;
-									i += 2;
-								}
-								else isErrorMs = "" + cn;
-							}
-							else isErrorMs = "key:" + c;
-							tmpStr = "";
-						}
-						else
-						{
-							if (cn == ',')
-							{
-								values.Add (tmpStr);	
-								getKey = true;
-							}
-							else isErrorMs = "" + cn;
-						}
-						break;
-					case ']':
-						if (getKey)
-						{
-							isErrorMs = "" + c;
-							break;
-						}
-						if (tmpStr.IndexOf ('[') != 0)
-						{
-							isErrorMs = "" + c;
-							break;
-						}
-						if (cn == ',')
-						{
-							values.Add (tmpStr);	
-							getKey = true;
-							tmpStr = "";
-						}
-						else isErrorMs = "" + cn;
-						break;
-					case '}':
-						if (getKey)
-						{
-							isErrorMs = "" + c;
-							break;
-						}
-						if (tmpStr.IndexOf ('{') != 0)
-						{
-							isErrorMs = "" + c;
-							break;
-						}
-						if (cn == ',')
-						{
-							values.Add (tmpStr);	
-							getKey = true;
-							tmpStr = "";
-						}
-						else isErrorMs = "" + cn;
-						break;
-					}
-					if (!string.IsNullOrEmpty (isErrorMs)) break;
-				}
-				if (!string.IsNullOrEmpty (isErrorMs))
-				{
-					isJson = false;
-					Debug.LogError ("无效的字符:" + c);
-				}
-			}
-			else isJson = false;
-			return isJson;
 		}
 	}
 }

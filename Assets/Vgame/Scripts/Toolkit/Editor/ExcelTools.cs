@@ -6,6 +6,7 @@ using Excel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Vgame.ToolKit.Editor
 {
@@ -82,14 +83,21 @@ namespace Vgame.ToolKit.Editor
 		[MenuItem ("Vgame/ToolKit/Excel To JSON")]
 		static void ExcelToJSON ()
 		{
-			List<string> keys = new List<string> ();
-			List<string> values = new List<string> ();
-			Debug.Log (JSONTools.IsJson ("{\"name\":\"sjdhajkshdjk\"}", out keys, out values));
-			foreach (string str in keys) Debug.Log ("keys:" + str);
-			foreach (string str in values) Debug.Log ("values:" + str);
-//			SAVE_EXT = SAVE_EXT_JSON;
-//			SAVE_DIR_NAME = SAVE_DIR_NAME_JSON;
-//			OnBegin (ConvertToJSON);
+//			LitJson.JsonData jd = LitJson.JsonMapper.ToObject ("{\"jj\":[1.0]}");
+//			foreach (System.Collections.DictionaryEntry de in jd)
+//			{
+//				Debug.Log (de.Key);
+//				LitJson.JsonData lj = de.Value as LitJson.JsonData;
+//				int count = lj.Count;
+//				Debug.Log (count);
+//				for (int i = 0; i < count; i++)
+//				{
+//					Debug.Log (lj [i].GetType ());
+//				}
+//			}
+			SAVE_EXT = SAVE_EXT_JSON;
+			SAVE_DIR_NAME = SAVE_DIR_NAME_JSON;
+			OnBegin (ConvertToJSON);
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel To Class")]
@@ -317,8 +325,14 @@ namespace Vgame.ToolKit.Editor
 			string[] fields = ReadFields (table);
 			//字段类型
 			string[] fieldTypes = ReadFieldTypes (table);
+			//首行值
+			ArrayList values = ReadFielValuesTop (table);
+
+			List<string> classes = new List<string> ();
 
 			StringBuilder sb = new StringBuilder ();
+			sb.AppendLine ("using System;");
+			sb.AppendLine ("using System.Collections;");
 			sb.AppendLine ("using System.Collections.Generic;");
 			sb.AppendLine ("using Vgame.Data;");
 			sb.AppendLine ("");
@@ -332,15 +346,25 @@ namespace Vgame.ToolKit.Editor
 				sb.AppendLine ("\t/// " + fieldDes [i]);
 				sb.AppendLine ("\t/// </summary>");
 				string type = fieldTypes [i];
+				string field = fields [i];
 				if (type.Equals ("json"))
 				{
 					type = "string";
+					if (values.Count > i)
+					{
+						string value = values [i].ToString ();
+						type = className + "_" + field;
+						classes.Add (JSONTools.ToClass (value, className + "_" + field));	
+					}
 				}
-				string field = fields [i];
 				StringTools.ToUpperFirstChar (ref field);
 				sb.AppendLine ("\tpublic " + type + " " + field + ";");	
 			}
-			sb.Append ("}");
+			sb.AppendLine ("}");
+			foreach (string str in classes)
+			{
+				sb.AppendLine (str);
+			}
 			foreach (string str in pathes)
 			{
 				string path = Path.Combine (str, className + SAVE_EXT);
@@ -418,6 +442,24 @@ namespace Vgame.ToolKit.Editor
 				types.SetValue (table.Rows [2] [i].ToString (), i);
 			}
 			return types;
+		}
+
+		/// <summary>
+		/// 获取第一行表数据
+		/// </summary>
+		/// <returns>The fiel values top.</returns>
+		/// <param name="table">Table.</param>
+		static ArrayList ReadFielValuesTop (DataTable table)
+		{
+			int columus = table.Columns.Count;
+			//字段描述
+			ArrayList values = new ArrayList ();
+			//读取字段描述
+			for (int i = 0; i < columus; i++)
+			{
+				values.Add (table.Rows [3] [i]);
+			}
+			return values;
 		}
 	}
 }
