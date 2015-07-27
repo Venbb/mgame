@@ -72,36 +72,21 @@ namespace Vgame.ToolKit.Editor
 
 		static DataSet ds = new DataSet ();
 
-		[MenuItem ("Vgame/ToolKit/Excel To CSV")]
-		static void ExcelToCSV ()
+		public static void ExcelToCSV ()
 		{
 			SAVE_EXT = SAVE_EXT_CSV;
 			SAVE_DIR_NAME = SAVE_DIR_NAME_CSV;
 			OnBegin (ConvertToCSV);
 		}
 
-		[MenuItem ("Vgame/ToolKit/Excel To JSON")]
-		static void ExcelToJSON ()
+		public static void ExcelToJSON ()
 		{
-//			LitJson.JsonData jd = LitJson.JsonMapper.ToObject ("{\"jj\":[1.0]}");
-//			foreach (System.Collections.DictionaryEntry de in jd)
-//			{
-//				Debug.Log (de.Key);
-//				LitJson.JsonData lj = de.Value as LitJson.JsonData;
-//				int count = lj.Count;
-//				Debug.Log (count);
-//				for (int i = 0; i < count; i++)
-//				{
-//					Debug.Log (lj [i].GetType ());
-//				}
-//			}
 			SAVE_EXT = SAVE_EXT_JSON;
 			SAVE_DIR_NAME = SAVE_DIR_NAME_JSON;
 			OnBegin (ConvertToJSON);
 		}
 
-		[MenuItem ("Vgame/ToolKit/Excel To Class")]
-		static void ExcelToClass ()
+		public static void ExcelToClass ()
 		{
 			SAVE_EXT = SAVE_EXT_CLASS;
 			SAVE_DIR_NAME = SAVE_DIR_NAME_CLASS;
