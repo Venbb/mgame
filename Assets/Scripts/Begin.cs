@@ -2,12 +2,12 @@
 using System.Collections;
 using LuaInterface;
 
-public class Begin : MonoBehaviour 
+public class Begin : MonoBehaviour
 {
 	public GameObject Controller;
 	public static bool IsColone;
 	// Use this for initialization
-	void Start () 
+	void Start ()
 	{
 //		if (!IsColone) 
 //		{
@@ -16,11 +16,12 @@ public class Begin : MonoBehaviour
 //			IsColone=true;
 //		}
 		LuaState ls = new LuaState ();
-		ls.DoString ("print('Hello World !')");
+		ls.DoString (@"print('Hello world !')");
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 	
 	}
 }
