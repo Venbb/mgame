@@ -455,7 +455,7 @@ namespace Vgame.ToolKit.Editor
 			sb.AppendLine ("");
 			foreach (string str in pathes)
 			{
-				string path = Path.Combine (str, "DataBase" + SAVE_EXT);
+				string path = Path.Combine (str, "ConfigData" + SAVE_EXT);
 				StreamWriter sw = new StreamWriter (path, true, Encoding.Unicode);
 				sw.Write (sb);
 				sw.Close ();
