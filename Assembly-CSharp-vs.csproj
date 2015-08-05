@@ -184,7 +184,7 @@
      <Compile Include="Assets\Scripts\Begin.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Test.cs" />
-     <Compile Include="Assets\Vgame\Scripts\Data\DataBase.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Data\DataObject.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\SDKHandler.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitBinding.cs" />
      <Compile Include="Assets\Vgame\Scripts\SDK\StoreKit\StoreKitDownload.cs" />

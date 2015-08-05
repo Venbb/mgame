@@ -1,7 +1,7 @@
 ﻿
 namespace Vgame.Data
 {
-	public class DataBase
+	public class DataObject
 	{
 
 	}

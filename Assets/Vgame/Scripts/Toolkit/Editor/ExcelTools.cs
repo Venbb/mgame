@@ -334,7 +334,7 @@ namespace Vgame.ToolKit.Editor
 			sb.AppendLine ("");
 			string className = table.TableName;
 			StringTools.ToUpperFirstChar (ref className);
-			sb.AppendLine ("public class " + className + ":DataBase");
+			sb.AppendLine ("public class " + className + ":DataObject");
 			sb.AppendLine ("{");
 			for (int i = 0; i < fields.Length; i++)
 			{
