@@ -46,5 +46,11 @@ namespace Vgame.ToolKit.Editor
 		{
 			Application.OpenURL ("https://github.com/Venbb/mgame");
 		}
+
+		[MenuItem ("Assets/Vgame/Lua Script", false, 1)]
+		static void CreateLuaScript ()
+		{
+
+		}
 	}
 }
