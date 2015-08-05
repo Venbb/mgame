@@ -16,9 +16,9 @@ public class Begin : MonoBehaviour
 //			DontDestroyOnLoad(o);
 //			IsColone=true;
 //		}
-//		LuaState ls = new LuaState ();
+		LuaState ls = new LuaState ();
 //		ls.RegisterFunction ("hhs", this, this.GetType ().GetMethod ("hhs"));
-//		ls.DoString (luaStr.ToString ());
+		ls.DoString (luaStr.ToString ());
 //
 //		Debug.Log ("ls[\"nimei\"]:" + ls ["nimei"]);
 //

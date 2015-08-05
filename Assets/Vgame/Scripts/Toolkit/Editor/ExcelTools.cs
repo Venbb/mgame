@@ -45,6 +45,10 @@ namespace Vgame.ToolKit.Editor
 		/// </summary>
 		const string SAVE_EXT_CLASS = ".cs";
 		/// <summary>
+		/// 生成Lua文件扩展名
+		/// </summary>
+		const string SAVE_EXT_LUA = ".lua";
+		/// <summary>
 		/// 读取EXCEl的文件路径片段
 		/// </summary>
 		const string READ_DIR_NAME_EXCEL = "Vdata/Excel";
@@ -60,6 +64,10 @@ namespace Vgame.ToolKit.Editor
 		/// 保存CLASS实体类的文件路径片段
 		/// </summary>
 		const string SAVE_DIR_NAME_CLASS = "Vdata/Classes";
+		/// <summary>
+		/// 保存Lua文件路径片段
+		/// </summary>
+		const string SAVE_DIR_NAME_LUA = "Vdata/Lua";
 
 		/// <summary>
 		/// 文件保存扩展名
@@ -91,6 +99,13 @@ namespace Vgame.ToolKit.Editor
 			SAVE_EXT = SAVE_EXT_CLASS;
 			SAVE_DIR_NAME = SAVE_DIR_NAME_CLASS;
 			OnBegin (ConvertToClass);
+		}
+
+		public static void ExcelToLua ()
+		{
+			SAVE_EXT = SAVE_EXT_LUA;
+			SAVE_DIR_NAME = SAVE_DIR_NAME_LUA;
+			OnBegin (ConvertToLua);
 		}
 
 		static void OnBegin (CallBackWithParams<DataTable,List<string>> ckFun)
@@ -277,10 +292,6 @@ namespace Vgame.ToolKit.Editor
 							if (string.IsNullOrEmpty (valueStr)) valueStr = "null";
 							break;
 						}
-						if (string.IsNullOrEmpty (valueStr))
-						{
-
-						}
 						sb.AppendLine (string.Format ("  \"{0}\":{1}{2}", fields [j], valueStr, (j + 1 < columus ? "," : "")));
 					}
 				}
@@ -357,6 +368,98 @@ namespace Vgame.ToolKit.Editor
 				sw.Write (sb);
 				sw.Close ();
 				Debug.Log ("生成Class成功:" + path);
+			}
+		}
+
+		/// <summary>
+		/// 转换成Lua
+		/// </summary>
+		/// <param name="table">Table.</param>
+		/// <param name="pathes">Pathes.</param>
+		static void ConvertToLua (DataTable table, List<string> pathes)
+		{
+			int rows = table.Rows.Count;
+			int columus = table.Columns.Count;
+			//字段名
+			string[] fields = ReadFields (table);
+			//字段类型
+			string[] fieldTypes = ReadFieldTypes (table);
+
+			StringBuilder sb = new StringBuilder ();
+			string tableName = table.TableName;
+			StringTools.ToUpperFirstChar (ref tableName);
+			sb.AppendLine (tableName + " =");
+			sb.AppendLine ("{");
+			for (int i = 3; i < rows; i++)
+			{
+				sb.Append (" [" + table.Rows [i] [0] + "] = {");
+				for (int j = 0; j < columus; j++)
+				{
+					string valueStr = table.Rows [i] [j].ToString ();
+					string type = fieldTypes [j];
+					if (type.Equals ("string"))
+					{
+						sb.Append (string.Format ("{0}={1}{2}", fields [j], "\"" + valueStr + "\"", (j + 1 < columus ? "," : "")));
+					}
+					else
+					{
+						switch (type)
+						{
+						case "int":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (valueStr.Contains (".")) valueStr = valueStr.Substring (0, 1);
+							}
+							break;
+						case "float":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (!valueStr.Contains (".")) valueStr += ".0";
+							}
+							break;
+						case "double":
+							if (string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = "0";	
+							}
+							else
+							{
+								if (!valueStr.Contains (".")) valueStr += ".0";
+							}
+							break;
+						default:
+							if (!string.IsNullOrEmpty (valueStr))
+							{
+								valueStr = valueStr.Replace ('[', '{');
+								valueStr = valueStr.Replace (']', '}');
+								valueStr = valueStr.Replace (':', '=');
+								valueStr = valueStr.Replace ("\"", "");
+							}
+							else valueStr = "nil";
+							break;
+						}
+						sb.Append (string.Format ("{0}={1}{2}", fields [j], valueStr, (j + 1 < columus ? "," : "")));
+					}
+				}
+				sb.AppendLine (i + 1 < rows ? "}," : "}");
+			}
+			sb.AppendLine ("}");
+			sb.AppendLine ("");
+			foreach (string str in pathes)
+			{
+				string path = Path.Combine (str, "DataBase" + SAVE_EXT);
+				StreamWriter sw = new StreamWriter (path, true, Encoding.Unicode);
+				sw.Write (sb);
+				sw.Close ();
+				Debug.Log ("生成Lua成功:" + path);
 			}
 		}
 

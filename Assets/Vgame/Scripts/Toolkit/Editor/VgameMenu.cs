@@ -23,6 +23,18 @@ namespace Vgame.ToolKit.Editor
 			ExcelTools.ExcelToClass ();
 		}
 
+		[MenuItem ("Vgame/ToolKit/Excel/")]
+		static void ExcelBreaker ()
+		{
+			//分割线
+		}
+
+		[MenuItem ("Vgame/ToolKit/Excel/Excel To Lua")]
+		static void ExcelToLua ()
+		{
+			ExcelTools.ExcelToLua ();
+		}
+
 		[MenuItem ("Vgame/")]
 		static void Breaker ()
 		{
