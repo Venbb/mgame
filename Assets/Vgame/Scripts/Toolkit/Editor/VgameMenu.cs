@@ -1,26 +1,26 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Vgame.ToolKit.VgameEditor
+namespace VgameEditor
 {
 	public static class VgameMenu
 	{
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To CSV")]
 		static void ExcelToCSV ()
 		{
-			ExcelTools.ExcelToCSV ();
+			ExcelEditor.ExcelToCSV ();
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To JSON")]
 		static void ExcelToJSON ()
 		{
-			ExcelTools.ExcelToJSON ();
+			ExcelEditor.ExcelToJSON ();
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To Class")]
 		static void ExcelToClass ()
 		{
-			ExcelTools.ExcelToClass ();
+			ExcelEditor.ExcelToClass ();
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel/")]
@@ -32,7 +32,7 @@ namespace Vgame.ToolKit.VgameEditor
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To Lua")]
 		static void ExcelToLua ()
 		{
-			ExcelTools.ExcelToLua ();
+			ExcelEditor.ExcelToLua ();
 		}
 
 		[MenuItem ("Vgame/")]
@@ -50,7 +50,7 @@ namespace Vgame.ToolKit.VgameEditor
 		[MenuItem ("Assets/Vgame/Create Lua Script", false, 1)]
 		static void CreateLuaScript ()
 		{
-			VgameEditor.CreateLuaScript ();
+			ScriptEditor.CreateLuaScript ();
 		}
 	}
 }

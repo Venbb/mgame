@@ -7,10 +7,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections;
+using Vgame;
+using Vgame.ToolKit;
 
-namespace Vgame.ToolKit.VgameEditor
+namespace VgameEditor
 {
-	public static class ExcelTools
+	public static class ExcelEditor
 	{
 		/// <summary>
 		/// 逗号分隔符
@@ -350,7 +352,7 @@ namespace Vgame.ToolKit.VgameEditor
 					{
 						string value = values [i].ToString ();
 						type = className + "_" + field;
-						classes.Add (JSONTools.ToClass (value, className + "_" + field));	
+						classes.Add (JSONEditor.ToClass (value, className + "_" + field));	
 					}
 				}
 				StringTools.ToUpperFirstChar (ref field);

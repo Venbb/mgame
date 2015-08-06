@@ -149,8 +149,9 @@
      <Compile Include="Assets\Vgame\Editor\XUPorter\XCProject.cs" />
      <Compile Include="Assets\Vgame\Editor\XUPorter\XClass.cs" />
      <Compile Include="Assets\Vgame\Editor\XUPorter\XCodePostProcess.cs" />
-     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\ExcelTools.cs" />
-     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\JSONTools.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\ExcelEditor.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\JSONEditor.cs" />
+     <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\ScriptEditor.cs" />
      <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\VgameEditor.cs" />
      <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\VgameMenu.cs" />
      <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth Cutout.shader" />

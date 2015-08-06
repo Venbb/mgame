@@ -3,10 +3,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using LitJson;
+using Vgame.ToolKit;
 
-namespace Vgame.ToolKit.VgameEditor
+namespace VgameEditor
 {
-	public static class JSONTools
+	public static class JSONEditor
 	{
 		/// <summary>
 		/// 转换成实体类（字符串）
