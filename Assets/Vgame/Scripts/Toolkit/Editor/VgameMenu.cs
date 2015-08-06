@@ -47,10 +47,16 @@ namespace VgameEditor
 			Application.OpenURL ("https://github.com/Venbb/mgame");
 		}
 
-		[MenuItem ("Assets/Vgame/Create Lua Script", false, 1)]
+		[MenuItem ("Assets/Vgame/Create/Lua Script", false, 1)]
 		static void CreateLuaScript ()
 		{
 			ScriptEditor.CreateLuaScript ();
+		}
+
+		[MenuItem ("Assets/Vgame/Create/C# Script", false, 1)]
+		static void CreateCSharpScript ()
+		{
+			ScriptEditor.CreateCSharpScript ();
 		}
 	}
 }
