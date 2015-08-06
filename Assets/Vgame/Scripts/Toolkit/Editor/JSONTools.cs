@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LitJson;
 
-namespace Vgame.ToolKit.Editor
+namespace Vgame.ToolKit.VgameEditor
 {
 	public static class JSONTools
 	{

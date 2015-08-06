@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace Vgame.ToolKit.Editor
+namespace Vgame.ToolKit.VgameEditor
 {
 	public static class ExcelTools
 	{

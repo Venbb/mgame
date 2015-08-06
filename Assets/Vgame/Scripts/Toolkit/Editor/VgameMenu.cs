@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Vgame.ToolKit.Editor
+namespace Vgame.ToolKit.VgameEditor
 {
 	public static class VgameMenu
 	{
@@ -47,10 +47,10 @@ namespace Vgame.ToolKit.Editor
 			Application.OpenURL ("https://github.com/Venbb/mgame");
 		}
 
-		[MenuItem ("Assets/Vgame/Lua Script", false, 1)]
+		[MenuItem ("Assets/Vgame/Create Lua Script", false, 1)]
 		static void CreateLuaScript ()
 		{
-
+			VgameEditor.CreateLuaScript ();
 		}
 	}
 }
