@@ -154,6 +154,14 @@
      <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\ScriptEditor.cs" />
      <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\VgameEditor.cs" />
      <Compile Include="Assets\Vgame\Scripts\Toolkit\Editor\VgameMenu.cs" />
+     <Compile Include="Assets\uLua\Editor\BindLua.cs" />
+     <Compile Include="Assets\uLua\Editor\WelcomeScreen.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_System_Delegate.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_System_Enum.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_System_Object.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_System_String.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_System_Type.cs" />
+     <Compile Include="Assets\uLua\Editor\Wrap\ToLua_UnityEngine_Object.cs" />
      <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth Cutout.shader" />
      <None Include="Assets\NGUI\ReadMe - 3.8.2.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Masked 1.shader" />
@@ -172,7 +180,6 @@
      <None Include="Assets\Vgame\Docs\ReadMe.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored (TextureClip).shader" />
      <None Include="Assets\NGUI\Examples\Atlases\SciFi\SciFi Font - Header.txt" />
-     <None Include="Assets\uLua\Source\README.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Masked 3.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored 1.shader" />
      <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
@@ -189,8 +196,9 @@
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
-     <None Include="Assets\uLua\Examples\04_ScriptsFromFile\04_ScriptsFromFile.lua.txt" />
+     <None Include="Assets\uLua\Examples\04_ScriptsFromFile\ScriptsFromFile01.lua.txt" />
      <None Include="Assets\NGUI\Examples\Shaders\Unlit - Additive Colored.shader" />
+     <None Include="Assets\uLua\Lua\System\readme.txt" />
      <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Masked.shader" />
      <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />
      <None Include="Assets\NGUI\Examples\Shaders\Refractive.shader" />

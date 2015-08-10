@@ -12,44 +12,21 @@ namespace LuaInterface
      * Version: 1.0
      */
     public class LuaTable : LuaBase
-    {
-        //internal int _Reference;
-        //private Lua _Interpreter;
+    {                
         public LuaTable(int reference, LuaState interpreter)
         {
             _Reference = reference;
             _Interpreter = interpreter;
+            translator = interpreter.translator;
         }
 
-        //bool disposed = false;
-        //~LuaTable()
-        //{
-        //    Dispose(false);
-        //}
+        public LuaTable(int reference, IntPtr L)
+        {            
+            _Reference = reference;
+            translator = ObjectTranslator.FromState(L);
+            _Interpreter = translator.interpreter;            
+        }
 
-        //public void Dispose()
-        //{
-        //    Dispose(true);
-        //    GC.SuppressFinalize(this);
-        //}
-
-        //public virtual void Dispose(bool disposeManagedResources)
-        //{
-        //    if (!this.disposed)
-        //    {
-        //        if (disposeManagedResources)
-        //        {
-        //            if (_Reference != 0)
-        //                _Interpreter.dispose(_Reference);
-        //        }
-
-        //        disposed = true;
-        //    }
-        //}
-        //~LuaTable()
-        //{
-        //    _Interpreter.dispose(_Reference);
-        //}
         /*
          * Indexer for string fields of the table
          */
@@ -85,6 +62,16 @@ namespace LuaInterface
             return _Interpreter.GetTableDict(this).GetEnumerator();
         }
 
+        public int Count
+        {
+            get
+            {
+                //push(_Interpreter.L);
+                //LuaDLL.lua_objlen(_Interpreter.L, -1);
+                return _Interpreter.GetTableDict(this).Count;
+            }
+        }
+
         public ICollection Keys
         {
             get { return _Interpreter.GetTableDict(this).Keys; }
@@ -102,6 +89,23 @@ namespace LuaInterface
 			LuaDLL.lua_setmetatable(_Interpreter.L, -2);
 			LuaDLL.lua_pop(_Interpreter.L, 1);
 		}
+
+        public T[] ToArray<T>()
+        {
+            IntPtr L = _Interpreter.L;            
+            push(L);
+            return LuaScriptMgr.GetArrayObject<T>(L, -1);            
+        }
+
+        public void Set(string key, object o)
+        {
+            IntPtr L = _Interpreter.L;
+            push(L);
+            LuaDLL.lua_pushstring(L, key);
+            PushArgs(L, o);
+            LuaDLL.lua_rawset(L, -3);
+            LuaDLL.lua_settop(L, 0);
+        }
 
         /*
          * Gets an string fields of a table ignoring its metatable,
@@ -122,29 +126,39 @@ namespace LuaInterface
                 return obj;
         }
 
+        public LuaFunction RawGetFunc(string field)
+        {            
+            IntPtr L = _Interpreter.L;
+            LuaTypes type = LuaTypes.LUA_TNONE;
+            LuaFunction func = null;
+
+            int oldTop = LuaDLL.lua_gettop(L);
+            LuaDLL.lua_getref(L, _Reference);
+            LuaDLL.lua_pushstring(L, field);
+            LuaDLL.lua_gettable(L, -2);
+
+            type = LuaDLL.lua_type(L, -1);
+
+            if (type == LuaTypes.LUA_TFUNCTION)
+            {
+                func = new LuaFunction(LuaDLL.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX), L);                
+            }
+
+            LuaDLL.lua_settop(L, oldTop);
+            return func;
+        }
+
         /*
          * Pushes this table into the Lua stack
-         */
+        // */
         internal void push(IntPtr luaState)
         {
             LuaDLL.lua_getref(luaState, _Reference);
-        }
+        }     
+
         public override string ToString()
         {
             return "table";
         }
-        //public override bool Equals(object o)
-        //{
-        //    if (o is LuaTable)
-        //    {
-        //        LuaTable l = (LuaTable)o;
-        //        return _Interpreter.compareRef(l._Reference, _Reference);
-        //    }
-        //    else return false;
-        //}
-        //public override int GetHashCode()
-        //{
-        //    return _Reference;
-        //}
     }
 }
