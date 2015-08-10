@@ -306,6 +306,9 @@
  <Reference Include="P31RestKit">
  <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/P31RestKit.dll</HintPath>
  </Reference>
+ <Reference Include="ICSharpCode.SharpZipLib">
+ <HintPath>/Users/niko/Documents/workspace/u3d/mgame/Assets/Vgame/Plugins/Dll_Ex/ICSharpCode.SharpZipLib.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
