@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 
 [ExecuteInEditMode]
-[AddComponentMenu("NGUI/UI/Anchor")]
+[AddComponentMenu ("NGUI/UI/Anchor")]
 public class UIAnchor : MonoBehaviour
 {
 	public enum Side
@@ -69,7 +69,7 @@ public class UIAnchor : MonoBehaviour
 
 	Transform mTrans;
 	Animation mAnim;
-	Rect mRect = new Rect();
+	Rect mRect = new Rect ();
 	UIRoot mRoot;
 	bool mStarted = false;
 
@@ -79,14 +79,20 @@ public class UIAnchor : MonoBehaviour
 #if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
 		mAnim = animation;
 #else
-		mAnim = GetComponent<Animation>();
+		mAnim = GetComponent<Animation> ();
 #endif
 		UICamera.onScreenResize += ScreenSizeChanged;
 	}
 
-	void OnDestroy () { UICamera.onScreenResize -= ScreenSizeChanged; }
+	void OnDestroy ()
+	{
+		UICamera.onScreenResize -= ScreenSizeChanged;
+	}
 
-	void ScreenSizeChanged () { if (mStarted && runOnlyOnce) Update(); }
+	void ScreenSizeChanged ()
+	{
+		if (mStarted && runOnlyOnce) Update ();
+	}
 
 	/// <summary>
 	/// Automatically find the camera responsible for drawing the widgets under this object.
@@ -99,14 +105,14 @@ public class UIAnchor : MonoBehaviour
 			container = widgetContainer.gameObject;
 			widgetContainer = null;
 #if UNITY_EDITOR
-			NGUITools.SetDirty(this);
+			NGUITools.SetDirty (this);
 #endif
 		}
 
-		mRoot = NGUITools.FindInParents<UIRoot>(gameObject);
-		if (uiCamera == null) uiCamera = NGUITools.FindCameraForLayer(gameObject.layer);
+		mRoot = NGUITools.FindInParents<UIRoot> (gameObject);
+		if (uiCamera == null) uiCamera = NGUITools.FindCameraForLayer (gameObject.layer);
 		
-		Update();
+		Update ();
 
 		mStarted = true;
 	}
@@ -121,12 +127,12 @@ public class UIAnchor : MonoBehaviour
 
 		bool useCamera = false;
 
-		UIWidget wc = (container == null) ? null : container.GetComponent<UIWidget>();
-		UIPanel pc = (container == null && wc == null) ? null : container.GetComponent<UIPanel>();
+		UIWidget wc = (container == null) ? null : container.GetComponent<UIWidget> ();
+		UIPanel pc = (container == null && wc == null) ? null : container.GetComponent<UIPanel> ();
 
 		if (wc != null)
 		{
-			Bounds b = wc.CalculateBounds(container.transform.parent);
+			Bounds b = wc.CalculateBounds (container.transform.parent);
 
 			mRect.x = b.min.x;
 			mRect.y = b.min.y;
@@ -158,8 +164,8 @@ public class UIAnchor : MonoBehaviour
 		else if (container != null)
 		{
 			Transform root = container.transform.parent;
-			Bounds b = (root != null) ? NGUIMath.CalculateRelativeWidgetBounds(root, container.transform) :
-				NGUIMath.CalculateRelativeWidgetBounds(container.transform);
+			Bounds b = (root != null) ? NGUIMath.CalculateRelativeWidgetBounds (root, container.transform) :
+				NGUIMath.CalculateRelativeWidgetBounds (container.transform);
 
 			mRect.x = b.min.x;
 			mRect.y = b.min.y;
@@ -176,7 +182,7 @@ public class UIAnchor : MonoBehaviour
 
 		float cx = (mRect.xMin + mRect.xMax) * 0.5f;
 		float cy = (mRect.yMin + mRect.yMax) * 0.5f;
-		Vector3 v = new Vector3(cx, cy, 0f);
+		Vector3 v = new Vector3 (cx, cy, 0f);
 
 		if (side != Side.Center)
 		{
@@ -199,36 +205,36 @@ public class UIAnchor : MonoBehaviour
 		{
 			if (uiCamera.orthographic)
 			{
-				v.x = Mathf.Round(v.x);
-				v.y = Mathf.Round(v.y);
+				v.x = Mathf.Round (v.x);
+				v.y = Mathf.Round (v.y);
 			}
 
-			v.z = uiCamera.WorldToScreenPoint(mTrans.position).z;
-			v = uiCamera.ScreenToWorldPoint(v);
+			v.z = uiCamera.WorldToScreenPoint (mTrans.position).z;
+			v = uiCamera.ScreenToWorldPoint (v);
 		}
 		else
 		{
-			v.x = Mathf.Round(v.x);
-			v.y = Mathf.Round(v.y);
+			v.x = Mathf.Round (v.x);
+			v.y = Mathf.Round (v.y);
 
 			if (pc != null)
 			{
-				v = pc.cachedTransform.TransformPoint(v);
+				v = pc.cachedTransform.TransformPoint (v);
 			}
 			else if (container != null)
 			{
 				Transform t = container.transform.parent;
-				if (t != null) v = t.TransformPoint(v);
+				if (t != null) v = t.TransformPoint (v);
 			}
 			v.z = mTrans.position.z;
 		}
 
 		// Wrapped in an 'if' so the scene doesn't get marked as 'edited' every frame
-		if (useCamera && uiCamera.isOrthoGraphic && mTrans.parent != null)
+		if (useCamera && uiCamera.orthographic && mTrans.parent != null)
 		{
-			v = mTrans.parent.InverseTransformPoint(v);
-			v.x = Mathf.RoundToInt(v.x);
-			v.y = Mathf.RoundToInt(v.y);
+			v = mTrans.parent.InverseTransformPoint (v);
+			v.x = Mathf.RoundToInt (v.x);
+			v.y = Mathf.RoundToInt (v.y);
 			if (mTrans.localPosition != v) mTrans.localPosition = v;
 		}
 		else if (mTrans.position != v) mTrans.position = v;

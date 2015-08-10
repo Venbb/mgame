@@ -45,7 +45,7 @@ public class UIPrefabTool : EditorWindow
 	GUIStyle mStyle;
 
 	// List of all the added objects
-	BetterList<Item> mItems = new BetterList<Item>();
+	BetterList<Item> mItems = new BetterList<Item> ();
 
 	/// <summary>
 	/// Get or set the dragged object.
@@ -56,18 +56,18 @@ public class UIPrefabTool : EditorWindow
 		get
 		{
 			if (DragAndDrop.objectReferences == null) return null;
-			if (DragAndDrop.objectReferences.Length == 1) return DragAndDrop.objectReferences[0] as GameObject;
+			if (DragAndDrop.objectReferences.Length == 1) return DragAndDrop.objectReferences [0] as GameObject;
 			return null;
 		}
 		set
 		{
 			if (value != null)
 			{
-				DragAndDrop.PrepareStartDrag();
+				DragAndDrop.PrepareStartDrag ();
 				DragAndDrop.objectReferences = new Object[1] { value };
 				draggedObjectIsOurs = true;
 			}
-			else DragAndDrop.AcceptDrag();
+			else DragAndDrop.AcceptDrag ();
 		}
 	}
 
@@ -79,13 +79,13 @@ public class UIPrefabTool : EditorWindow
 	{
 		get
 		{
-			object obj = DragAndDrop.GetGenericData("Prefab Tool");
+			object obj = DragAndDrop.GetGenericData ("Prefab Tool");
 			if (obj == null) return false;
 			return (bool)obj;
 		}
 		set
 		{
-			DragAndDrop.SetGenericData("Prefab Tool", value);
+			DragAndDrop.SetGenericData ("Prefab Tool", value);
 		}
 	}
 
@@ -97,17 +97,17 @@ public class UIPrefabTool : EditorWindow
 	{
 		instance = this;
 
-		Load();
+		Load ();
 
-		mContent = new GUIContent();
-		mStyle = new GUIStyle();
+		mContent = new GUIContent ();
+		mStyle = new GUIStyle ();
 		mStyle.alignment = TextAnchor.MiddleCenter;
-		mStyle.padding = new RectOffset(2, 2, 2, 2);
+		mStyle.padding = new RectOffset (2, 2, 2, 2);
 		mStyle.clipping = TextClipping.Clip;
 		mStyle.wordWrap = true;
 		mStyle.stretchWidth = false;
 		mStyle.stretchHeight = false;
-		mStyle.normal.textColor = UnityEditor.EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.5f) : new Color(0f, 0f, 0f, 0.5f);
+		mStyle.normal.textColor = UnityEditor.EditorGUIUtility.isProSkin ? new Color (1f, 1f, 1f, 0.5f) : new Color (0f, 0f, 0f, 0.5f);
 		mStyle.normal.background = null;
 	}
 
@@ -118,11 +118,14 @@ public class UIPrefabTool : EditorWindow
 	void OnDisable ()
 	{
 		instance = null;
-		foreach (Item item in mItems) DestroyTexture(item);
-		Save();
+		foreach (Item item in mItems) DestroyTexture (item);
+		Save ();
 	}
 
-	void OnSelectionChange () { Repaint(); }
+	void OnSelectionChange ()
+	{
+		Repaint ();
+	}
 
 	/// <summary>
 	/// Reset all loaded prefabs, collecting default controls instead.
@@ -130,23 +133,22 @@ public class UIPrefabTool : EditorWindow
 
 	public void Reset ()
 	{
-		foreach (Item item in mItems) DestroyTexture(item);
-		mItems.Clear();
+		foreach (Item item in mItems) DestroyTexture (item);
+		mItems.Clear ();
 
 		if (mTab == 0)
 		{
-			List<string> filtered = new List<string>();
-			string[] allAssets = AssetDatabase.GetAllAssetPaths();
+			List<string> filtered = new List<string> ();
+			string[] allAssets = AssetDatabase.GetAllAssetPaths ();
 
 			foreach (string s in allAssets)
 			{
-				if (s.EndsWith(".prefab") && s.Contains("Control -"))
-					filtered.Add(s);
+				if (s.EndsWith (".prefab") && s.Contains ("Control -")) filtered.Add (s);
 			}
 
-			filtered.Sort(string.Compare);
-			foreach (string s in filtered) AddGUID(AssetDatabase.AssetPathToGUID(s), -1);
-			RectivateLights();
+			filtered.Sort (string.Compare);
+			foreach (string s in filtered) AddGUID (AssetDatabase.AssetPathToGUID (s), -1);
+			RectivateLights ();
 		}
 	}
 
@@ -156,36 +158,36 @@ public class UIPrefabTool : EditorWindow
 
 	void AddItem (GameObject go, int index)
 	{
-		string guid = NGUIEditorTools.ObjectToGUID(go);
+		string guid = NGUIEditorTools.ObjectToGUID (go);
 
-		if (string.IsNullOrEmpty(guid))
+		if (string.IsNullOrEmpty (guid))
 		{
 #if UNITY_3_5
 			string path = EditorUtility.SaveFilePanel("Save a prefab",
 				NGUISettings.currentPath, go.name + ".prefab", "prefab");
 #else
-			string path = EditorUtility.SaveFilePanelInProject("Save a prefab",
-				go.name + ".prefab", "prefab", "Save prefab as...", NGUISettings.currentPath);
+			string path = EditorUtility.SaveFilePanelInProject ("Save a prefab",
+				              go.name + ".prefab", "prefab", "Save prefab as...", NGUISettings.currentPath);
 #endif	
-			if (string.IsNullOrEmpty(path)) return;
-			NGUISettings.currentPath = System.IO.Path.GetDirectoryName(path);
+			if (string.IsNullOrEmpty (path)) return;
+			NGUISettings.currentPath = System.IO.Path.GetDirectoryName (path);
 
-			go = PrefabUtility.CreatePrefab(path, go);
+			go = PrefabUtility.CreatePrefab (path, go);
 			if (go == null) return;
 
-			guid = NGUIEditorTools.ObjectToGUID(go);
-			if (string.IsNullOrEmpty(guid)) return;
+			guid = NGUIEditorTools.ObjectToGUID (go);
+			if (string.IsNullOrEmpty (guid)) return;
 		}
 
-		Item ent = new Item();
+		Item ent = new Item ();
 		ent.prefab = go;
 		ent.guid = guid;
-		GeneratePreview(ent, null);
-		RectivateLights();
+		GeneratePreview (ent, null);
+		RectivateLights ();
 
-		if (index < mItems.size) mItems.Insert(index, ent);
-		else mItems.Add(ent);
-		Save();
+		if (index < mItems.size) mItems.Insert (index, ent);
+		else mItems.Add (ent);
+		Save ();
 	}
 
 	/// <summary>
@@ -194,16 +196,16 @@ public class UIPrefabTool : EditorWindow
 
 	Item AddGUID (string guid, int index)
 	{
-		GameObject go = NGUIEditorTools.GUIDToObject<GameObject>(guid);
+		GameObject go = NGUIEditorTools.GUIDToObject<GameObject> (guid);
 
 		if (go != null)
 		{
-			Item ent = new Item();
+			Item ent = new Item ();
 			ent.prefab = go;
 			ent.guid = guid;
-			GeneratePreview(ent, null);
-			if (index < mItems.size) mItems.Insert(index, ent);
-			else mItems.Add(ent);
+			GeneratePreview (ent, null);
+			if (index < mItems.size) mItems.Insert (index, ent);
+			else mItems.Add (ent);
 			return ent;
 		}
 		return null;
@@ -219,11 +221,11 @@ public class UIPrefabTool : EditorWindow
 		int index = (int)obj;
 		if (index < mItems.size && index > -1)
 		{
-			Item item = mItems[index];
-			DestroyTexture(item);
-			mItems.RemoveAt(index);
+			Item item = mItems [index];
+			DestroyTexture (item);
+			mItems.RemoveAt (index);
 		}
-		Save();
+		Save ();
 	}
 
 	/// <summary>
@@ -232,9 +234,7 @@ public class UIPrefabTool : EditorWindow
 
 	Item FindItem (GameObject go)
 	{
-		for (int i = 0; i < mItems.size; ++i)
-			if (mItems[i].prefab == go)
-				return mItems[i];
+		for (int i = 0; i < mItems.size; ++i) if (mItems [i].prefab == go) return mItems [i];
 		return null;
 	}
 
@@ -254,27 +254,27 @@ public class UIPrefabTool : EditorWindow
 
 		if (mItems.size > 0)
 		{
-			string guid = mItems[0].guid;
-			StringBuilder sb = new StringBuilder();
-			sb.Append(guid);
+			string guid = mItems [0].guid;
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (guid);
 
 			for (int i = 1; i < mItems.size; ++i)
 			{
-				guid = mItems[i].guid;
+				guid = mItems [i].guid;
 
-				if (string.IsNullOrEmpty(guid))
+				if (string.IsNullOrEmpty (guid))
 				{
-					Debug.LogWarning("Unable to save " + mItems[i].prefab.name);
+					Debug.LogWarning ("Unable to save " + mItems [i].prefab.name);
 				}
 				else
 				{
-					sb.Append('|');
-					sb.Append(mItems[i].guid);
+					sb.Append ('|');
+					sb.Append (mItems [i].guid);
 				}
 			}
-			data = sb.ToString();
+			data = sb.ToString ();
 		}
-		NGUISettings.SetString(saveKey, data);
+		NGUISettings.SetString (saveKey, data);
 	}
 
 	/// <summary>
@@ -283,24 +283,24 @@ public class UIPrefabTool : EditorWindow
 
 	void Load ()
 	{
-		mTab = NGUISettings.GetInt("NGUI Prefab Tab", 0);
-		mMode = NGUISettings.GetEnum<Mode>("NGUI Prefab Mode", mMode);
+		mTab = NGUISettings.GetInt ("NGUI Prefab Tab", 0);
+		mMode = NGUISettings.GetEnum<Mode> ("NGUI Prefab Mode", mMode);
 
-		foreach (Item item in mItems) DestroyTexture(item);
-		mItems.Clear();
+		foreach (Item item in mItems) DestroyTexture (item);
+		mItems.Clear ();
 
-		string data = NGUISettings.GetString(saveKey, "");
+		string data = NGUISettings.GetString (saveKey, "");
 
-		if (string.IsNullOrEmpty(data))
+		if (string.IsNullOrEmpty (data))
 		{
-			Reset();
+			Reset ();
 		}
 		else
 		{
-			if (string.IsNullOrEmpty(data)) return;
-			string[] guids = data.Split('|');
-			foreach (string s in guids) AddGUID(s, -1);
-			RectivateLights();
+			if (string.IsNullOrEmpty (data)) return;
+			string[] guids = data.Split ('|');
+			foreach (string s in guids) AddGUID (s, -1);
+			RectivateLights ();
 		}
 	}
 
@@ -312,7 +312,7 @@ public class UIPrefabTool : EditorWindow
 	{
 		if (item != null && item.dynamicTex && item.tex != null)
 		{
-			DestroyImmediate(item.tex);
+			DestroyImmediate (item.tex);
 			item.dynamicTex = false;
 			item.tex = null;
 		}
@@ -326,12 +326,12 @@ public class UIPrefabTool : EditorWindow
 	{
 		for (int i = 0; i < mItems.size; ++i)
 		{
-			Item item = mItems[i];
+			Item item = mItems [i];
 
 			if (item.prefab == prefab)
 			{
-				GeneratePreview(item, point);
-				RectivateLights();
+				GeneratePreview (item, point);
+				RectivateLights ();
 				break;
 			}
 		}
@@ -354,21 +354,21 @@ public class UIPrefabTool : EditorWindow
 
 	Item CreateItemByPath (string path)
 	{
-		if (!string.IsNullOrEmpty(path))
+		if (!string.IsNullOrEmpty (path))
 		{
-			path = FileUtil.GetProjectRelativePath(path);
-			string guid = AssetDatabase.AssetPathToGUID(path);
+			path = FileUtil.GetProjectRelativePath (path);
+			string guid = AssetDatabase.AssetPathToGUID (path);
 
-			if (!string.IsNullOrEmpty(guid))
+			if (!string.IsNullOrEmpty (guid))
 			{
-				GameObject go = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject)) as GameObject;
-				Item ent = new Item();
+				GameObject go = AssetDatabase.LoadAssetAtPath (path, typeof(GameObject)) as GameObject;
+				Item ent = new Item ();
 				ent.prefab = go;
 				ent.guid = guid;
-				GeneratePreview(ent, null);
+				GeneratePreview (ent, null);
 				return ent;
 			}
-			else Debug.Log("No GUID");
+			else Debug.Log ("No GUID");
 		}
 		return null;
 	}
@@ -379,13 +379,13 @@ public class UIPrefabTool : EditorWindow
 
 	static UISnapshotPoint GetSnapshotPoint (Transform t)
 	{
-		UISnapshotPoint point = t.GetComponent<UISnapshotPoint>();
+		UISnapshotPoint point = t.GetComponent<UISnapshotPoint> ();
 		if (point != null) return point;
 		
 		for (int i = 0, imax = t.childCount; i < imax; ++i)
 		{
-			Transform c = t.GetChild(i);
-			point = GetSnapshotPoint(c);
+			Transform c = t.GetChild (i);
+			point = GetSnapshotPoint (c);
 			if (point != null) return point;
 		}
 		return null;
@@ -415,7 +415,7 @@ public class UIPrefabTool : EditorWindow
 		{
 			// Render textures only work in Unity Pro
 			string path = "Assets/NGUI/Editor/Preview/" + item.prefab.name + ".png";
-			item.tex = File.Exists(path) ? (Texture2D)Resources.LoadAssetAtPath(path, typeof(Texture2D)) : null;
+			item.tex = File.Exists (path) ? (Texture2D)AssetDatabase.LoadAssetAtPath (path, typeof(Texture2D)) : null;
 			item.dynamicTex = false;
 			return;
 		}
@@ -487,21 +487,20 @@ public class UIPrefabTool : EditorWindow
 
 	static bool SetupPreviewForUI (Camera cam, GameObject root, GameObject child, UISnapshotPoint point)
 	{
-		if (child.GetComponentInChildren<UIRect>() == null) return false;
+		if (child.GetComponentInChildren<UIRect> () == null) return false;
 
-		if (child.GetComponent<UIPanel>() == null)
-			root.AddComponent<UIPanel>();
+		if (child.GetComponent<UIPanel> () == null) root.AddComponent<UIPanel> ();
 
-		Bounds bounds = NGUIMath.CalculateAbsoluteWidgetBounds(child.transform);
+		Bounds bounds = NGUIMath.CalculateAbsoluteWidgetBounds (child.transform);
 		Vector3 size = bounds.extents;
 		float objSize = size.magnitude;
 
 		cam.transform.position = bounds.center;
 		cam.cullingMask = (1 << root.layer);
 
-		if (point != null) SetupSnapshotCamera(child, cam, point);
-		else SetupSnapshotCamera(child, cam, objSize, Mathf.RoundToInt(Mathf.Max(size.x, size.y)), -100f, 100f);
-		NGUITools.ImmediatelyCreateDrawCalls(root);
+		if (point != null) SetupSnapshotCamera (child, cam, point);
+		else SetupSnapshotCamera (child, cam, objSize, Mathf.RoundToInt (Mathf.Max (size.x, size.y)), -100f, 100f);
+		NGUITools.ImmediatelyCreateDrawCalls (root);
 		return true;
 	}
 
@@ -511,25 +510,25 @@ public class UIPrefabTool : EditorWindow
 
 	static bool SetupPreviewFor3D (Camera cam, GameObject root, GameObject child, UISnapshotPoint point)
 	{
-		Renderer[] rens = child.GetComponentsInChildren<Renderer>();
+		Renderer[] rens = child.GetComponentsInChildren<Renderer> ();
 		if (rens.Length == 0) return false;
 
-		Vector3 camDir = new Vector3(-0.25f, -0.35f, -0.5f);
-		Vector3 lightDir = new Vector3(-0.25f, -0.5f, -0.25f);
+		Vector3 camDir = new Vector3 (-0.25f, -0.35f, -0.5f);
+		Vector3 lightDir = new Vector3 (-0.25f, -0.5f, -0.25f);
 
-		camDir.Normalize();
-		lightDir.Normalize();
+		camDir.Normalize ();
+		lightDir.Normalize ();
 
 		// Determine the bounds of the model
-		Renderer ren = rens[0];
+		Renderer ren = rens [0];
 		Bounds bounds = ren.bounds;
 		int mask = (1 << ren.gameObject.layer);
 
 		for (int i = 1; i < rens.Length; ++i)
 		{
-			ren = rens[i];
+			ren = rens [i];
 			mask |= (1 << ren.gameObject.layer);
-			bounds.Encapsulate(ren.bounds);
+			bounds.Encapsulate (ren.bounds);
 		}
 
 		// Set the camera's properties
@@ -540,23 +539,23 @@ public class UIPrefabTool : EditorWindow
 		cam.orthographic = true;
 #endif
 		cam.transform.position = bounds.center;
-		cam.transform.rotation = Quaternion.LookRotation(camDir);
+		cam.transform.rotation = Quaternion.LookRotation (camDir);
 
 		float objSize = bounds.size.magnitude;
-		if (point != null) SetupSnapshotCamera(child, cam, point);
-		else SetupSnapshotCamera(child, cam, objSize, objSize * 0.4f, -objSize, objSize);
+		if (point != null) SetupSnapshotCamera (child, cam, point);
+		else SetupSnapshotCamera (child, cam, objSize, objSize * 0.4f, -objSize, objSize);
 
 		// Deactivate all scene lights
-		DeactivateLights();
+		DeactivateLights ();
 
 		// Create our own light
-		GameObject lightGO = NGUITools.AddChild(root);
-		Light light = lightGO.AddComponent<Light>();
+		GameObject lightGO = NGUITools.AddChild (root);
+		Light light = lightGO.AddComponent<Light> ();
 		light.type = LightType.Directional;
 		light.shadows = LightShadows.None;
 		light.color = Color.white;
 		light.intensity = 0.65f;
-		light.transform.rotation = Quaternion.LookRotation(lightDir);
+		light.transform.rotation = Quaternion.LookRotation (lightDir);
 		light.cullingMask = mask;
 		return true;
 	}
@@ -573,7 +572,7 @@ public class UIPrefabTool : EditorWindow
 
 		if (t.parent != null)
 		{
-			pos = t.parent.TransformPoint(pos);
+			pos = t.parent.TransformPoint (pos);
 			rot = t.parent.rotation * rot;
 		}
 
@@ -605,7 +604,7 @@ public class UIPrefabTool : EditorWindow
 		//   NGUI Snapshot Point 0.3
 		//   NGUI Snapshot Point 0.1 10 45
 
-		Transform snapshot = FindChild(go.transform, "NGUI Snapshot Point");
+		Transform snapshot = FindChild (go.transform, "NGUI Snapshot Point");
 		
 		if (snapshot == null)
 		{
@@ -615,8 +614,8 @@ public class UIPrefabTool : EditorWindow
 			return;
 		}
 
-		string str = snapshot.name.Replace("NGUI Snapshot Point", "");
-		string[] parts = str.Split(new char[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+		string str = snapshot.name.Replace ("NGUI Snapshot Point", "");
+		string[] parts = str.Split (new char[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
 
 		if (parts.Length == 3)
 		{
@@ -624,9 +623,9 @@ public class UIPrefabTool : EditorWindow
 			far = objectSize * 3f;
 			float fov = 30f;
 
-			float.TryParse(parts[0], out near);
-			float.TryParse(parts[1], out far);
-			float.TryParse(parts[2], out fov);
+			float.TryParse (parts [0], out near);
+			float.TryParse (parts [1], out far);
+			float.TryParse (parts [2], out fov);
 
 #if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
 			cam.isOrthoGraphic = false;
@@ -639,7 +638,7 @@ public class UIPrefabTool : EditorWindow
 		}
 		else if (parts.Length > 0)
 		{
-			float.TryParse(parts[0], out orthoSize);
+			float.TryParse (parts [0], out orthoSize);
 			cam.nearClipPlane = near;
 			cam.farClipPlane = far;
 			cam.orthographicSize = orthoSize;
@@ -655,11 +654,11 @@ public class UIPrefabTool : EditorWindow
 
 	static Transform FindChild (Transform t, string startsWith)
 	{
-		if (t.name.StartsWith(startsWith)) return t;
+		if (t.name.StartsWith (startsWith)) return t;
 
 		for (int i = 0, imax = t.childCount; i < imax; ++i)
 		{
-			Transform ch = FindChild(t.GetChild(i), startsWith);
+			Transform ch = FindChild (t.GetChild (i), startsWith);
 			if (ch != null) return ch;
 		}
 		return null;
@@ -676,15 +675,15 @@ public class UIPrefabTool : EditorWindow
 	{
 		if (mLights == null)
 		{
-			mLights = new BetterList<Light>();
-			Light[] lights = FindObjectsOfType(typeof(Light)) as Light[];
+			mLights = new BetterList<Light> ();
+			Light[] lights = FindObjectsOfType (typeof(Light)) as Light[];
 
 			foreach (Light l in lights)
 			{
-				if (NGUITools.GetActive(l))
+				if (NGUITools.GetActive (l))
 				{
 					l.enabled = false;
-					mLights.Add(l);
+					mLights.Add (l);
 				}
 			}
 		}
@@ -698,8 +697,7 @@ public class UIPrefabTool : EditorWindow
 	{
 		if (mLights != null)
 		{
-			for (int i = 0; i < mLights.size; ++i)
-				mLights[i].enabled = true;
+			for (int i = 0; i < mLights.size; ++i) mLights [i].enabled = true;
 			mLights = null;
 		}
 	}
@@ -720,10 +718,10 @@ public class UIPrefabTool : EditorWindow
 		float height = Screen.height - cellPadding + mPos.y;
 		int index = 0;
 
-		for (; ; ++index)
+		for (;; ++index)
 		{
-			Rect rect = new Rect(x, y, spacingX, spacingY);
-			if (rect.Contains(pos)) break;
+			Rect rect = new Rect (x, y, spacingX, spacingY);
+			if (rect.Contains (pos)) break;
 
 			x += spacingX;
 
@@ -757,42 +755,42 @@ public class UIPrefabTool : EditorWindow
 
 		GameObject dragged = draggedObject;
 		bool isDragging = (dragged != null);
-		int indexUnderMouse = GetCellUnderMouse(spacingX, spacingY);
-		Item selection = isDragging ? FindItem(dragged) : null;
+		int indexUnderMouse = GetCellUnderMouse (spacingX, spacingY);
+		Item selection = isDragging ? FindItem (dragged) : null;
 		string searchFilter = NGUISettings.searchField;
 
 		int newTab = mTab;
 
-		GUILayout.BeginHorizontal();
-		if (GUILayout.Toggle(newTab == 0, "1", "ButtonLeft")) newTab = 0;
-		if (GUILayout.Toggle(newTab == 1, "2", "ButtonMid")) newTab = 1;
-		if (GUILayout.Toggle(newTab == 2, "3", "ButtonMid")) newTab = 2;
-		if (GUILayout.Toggle(newTab == 3, "4", "ButtonMid")) newTab = 3;
-		if (GUILayout.Toggle(newTab == 4, "5", "ButtonRight")) newTab = 4;
-		GUILayout.EndHorizontal();
+		GUILayout.BeginHorizontal ();
+		if (GUILayout.Toggle (newTab == 0, "1", "ButtonLeft")) newTab = 0;
+		if (GUILayout.Toggle (newTab == 1, "2", "ButtonMid")) newTab = 1;
+		if (GUILayout.Toggle (newTab == 2, "3", "ButtonMid")) newTab = 2;
+		if (GUILayout.Toggle (newTab == 3, "4", "ButtonMid")) newTab = 3;
+		if (GUILayout.Toggle (newTab == 4, "5", "ButtonRight")) newTab = 4;
+		GUILayout.EndHorizontal ();
 
 		if (mTab != newTab)
 		{
-			Save();
+			Save ();
 			mTab = newTab;
 			mReset = true;
-			NGUISettings.SetInt("NGUI Prefab Tab", mTab);
-			Load();
+			NGUISettings.SetInt ("NGUI Prefab Tab", mTab);
+			Load ();
 		}
 
 		if (mReset && type == EventType.Repaint)
 		{
 			mReset = false;
-			foreach (Item item in mItems) GeneratePreview(item, null);
-			RectivateLights();
+			foreach (Item item in mItems) GeneratePreview (item, null);
+			RectivateLights ();
 		}
 
 		// Search field
-		GUILayout.BeginHorizontal();
+		GUILayout.BeginHorizontal ();
 		{
-			string after = EditorGUILayout.TextField("", searchFilter, "SearchTextField", GUILayout.Width(Screen.width - 20f));
+			string after = EditorGUILayout.TextField ("", searchFilter, "SearchTextField", GUILayout.Width (Screen.width - 20f));
 
-			if (GUILayout.Button("", "SearchCancelButton", GUILayout.Width(18f)))
+			if (GUILayout.Button ("", "SearchCancelButton", GUILayout.Width (18f)))
 			{
 				after = "";
 				GUIUtility.keyboardControl = 0;
@@ -804,7 +802,7 @@ public class UIPrefabTool : EditorWindow
 				searchFilter = after;
 			}
 		}
-		GUILayout.EndHorizontal();
+		GUILayout.EndHorizontal ();
 
 		bool eligibleToDrag = (currentEvent.mousePosition.y < Screen.height - 40);
 
@@ -819,22 +817,22 @@ public class UIPrefabTool : EditorWindow
 			if (indexUnderMouse != -1 && eligibleToDrag)
 			{
 				// Drag operation begins
-				if (draggedObjectIsOurs) DragAndDrop.StartDrag("Prefab Tool");
-				currentEvent.Use();
+				if (draggedObjectIsOurs) DragAndDrop.StartDrag ("Prefab Tool");
+				currentEvent.Use ();
 			}
 		}
 		else if (type == EventType.MouseUp)
 		{
-			DragAndDrop.PrepareStartDrag();
+			DragAndDrop.PrepareStartDrag ();
 			mMouseIsInside = false;
-			Repaint();
+			Repaint ();
 		}
 		else if (type == EventType.DragUpdated)
 		{
 			// Something dragged into the window
 			mMouseIsInside = true;
-			UpdateVisual();
-			currentEvent.Use();
+			UpdateVisual ();
+			currentEvent.Use ();
 		}
 		else if (type == EventType.DragPerform)
 		{
@@ -843,15 +841,15 @@ public class UIPrefabTool : EditorWindow
 			{
 				if (selection != null)
 				{
-					DestroyTexture(selection);
-					mItems.Remove(selection);
+					DestroyTexture (selection);
+					mItems.Remove (selection);
 				}
 
-				AddItem(dragged, indexUnderMouse);
+				AddItem (dragged, indexUnderMouse);
 				draggedObject = null;
 			}
 			mMouseIsInside = false;
-			currentEvent.Use();
+			currentEvent.Use ();
 		}
 		else if (type == EventType.DragExited || type == EventType.Ignore)
 		{
@@ -866,24 +864,22 @@ public class UIPrefabTool : EditorWindow
 		}
 
 		// Create a list of indices, inserting an entry of '-1' underneath the dragged object
-		BetterList<int> indices = new BetterList<int>();
+		BetterList<int> indices = new BetterList<int> ();
 
-		for (int i = 0; i < mItems.size; )
+		for (int i = 0; i < mItems.size;)
 		{
-			if (dragged != null && indices.size == indexUnderMouse)
-				indices.Add(-1);
+			if (dragged != null && indices.size == indexUnderMouse) indices.Add (-1);
 
-			if (mItems[i] != selection)
+			if (mItems [i] != selection)
 			{
-				if (string.IsNullOrEmpty(searchFilter) ||
-					mItems[i].prefab.name.IndexOf(searchFilter, System.StringComparison.CurrentCultureIgnoreCase) != -1)
-						indices.Add(i);
+				if (string.IsNullOrEmpty (searchFilter) ||
+				    mItems [i].prefab.name.IndexOf (searchFilter, System.StringComparison.CurrentCultureIgnoreCase) != -1) indices.Add (i);
 			}
 			++i;
 		}
 
 		// There must always be '-1' (Add/Move slot) present
-		if (!indices.Contains(-1)) indices.Add(-1);
+		if (!indices.Contains (-1)) indices.Add (-1);
 
 		// We want to start dragging something from within the window
 		if (eligibleToDrag && type == EventType.MouseDown && indexUnderMouse > -1)
@@ -892,14 +888,14 @@ public class UIPrefabTool : EditorWindow
 
 			if (currentEvent.button == 0 && indexUnderMouse < indices.size)
 			{
-				int index = indices[indexUnderMouse];
+				int index = indices [indexUnderMouse];
 
 				if (index != -1 && index < mItems.size)
 				{
-					selection = mItems[index];
+					selection = mItems [index];
 					draggedObject = selection.prefab;
 					dragged = selection.prefab;
-					currentEvent.Use();
+					currentEvent.Use ();
 				}
 			}
 		}
@@ -910,22 +906,22 @@ public class UIPrefabTool : EditorWindow
 		//}
 
 		// Draw the scroll view with prefabs
-		mPos = GUILayout.BeginScrollView(mPos);
+		mPos = GUILayout.BeginScrollView (mPos);
 		{
-			Color normal = new Color(1f, 1f, 1f, 0.5f);
+			Color normal = new Color (1f, 1f, 1f, 0.5f);
 
 			for (int i = 0; i < indices.size; ++i)
 			{
-				int index = indices[i];
-				Item ent = (index != -1) ? mItems[index] : selection;
+				int index = indices [i];
+				Item ent = (index != -1) ? mItems [index] : selection;
 
 				if (ent != null && ent.prefab == null)
 				{
-					mItems.RemoveAt(index);
+					mItems.RemoveAt (index);
 					continue;
 				}
 
-				Rect rect = new Rect(x, y, cellSize, cellSize);
+				Rect rect = new Rect (x, y, cellSize, cellSize);
 				Rect inner = rect;
 				inner.xMin += 2f;
 				inner.xMax -= 2f;
@@ -933,65 +929,64 @@ public class UIPrefabTool : EditorWindow
 				inner.yMax -= 2f;
 				rect.yMax -= 1f; // Button seems to be mis-shaped. It's height is larger than its width by a single pixel.
 
-				if (!isDragging && (mMode == Mode.CompactMode || (ent == null || ent.tex != null)))
-					mContent.tooltip = (ent != null) ? ent.prefab.name : "Click to add";
+				if (!isDragging && (mMode == Mode.CompactMode || (ent == null || ent.tex != null))) mContent.tooltip = (ent != null) ? ent.prefab.name : "Click to add";
 				else mContent.tooltip = "";
 
 				//if (ent == selection)
 				{
 					GUI.color = normal;
-					NGUIEditorTools.DrawTiledTexture(inner, NGUIEditorTools.backdropTexture);
+					NGUIEditorTools.DrawTiledTexture (inner, NGUIEditorTools.backdropTexture);
 				}
 
 				GUI.color = Color.white;
 				GUI.backgroundColor = normal;
 
-				if (GUI.Button(rect, mContent, "Button"))
+				if (GUI.Button (rect, mContent, "Button"))
 				{
 					if (ent == null || currentEvent.button == 0)
 					{
-						string path = EditorUtility.OpenFilePanel("Add a prefab", NGUISettings.currentPath, "prefab");
+						string path = EditorUtility.OpenFilePanel ("Add a prefab", NGUISettings.currentPath, "prefab");
 
-						if (!string.IsNullOrEmpty(path))
+						if (!string.IsNullOrEmpty (path))
 						{
-							NGUISettings.currentPath = System.IO.Path.GetDirectoryName(path);
-							Item newEnt = CreateItemByPath(path);
+							NGUISettings.currentPath = System.IO.Path.GetDirectoryName (path);
+							Item newEnt = CreateItemByPath (path);
 
 							if (newEnt != null)
 							{
-								mItems.Add(newEnt);
-								Save();
+								mItems.Add (newEnt);
+								Save ();
 							}
 						}
 					}
 					else if (currentEvent.button == 1)
 					{
-						NGUIContextMenu.AddItem("Delete", false, RemoveItem, index);
-						NGUIContextMenu.Show();
+						NGUIContextMenu.AddItem ("Delete", false, RemoveItem, index);
+						NGUIContextMenu.Show ();
 					}
 				}
 
-				string caption = (ent == null) ? "" : ent.prefab.name.Replace("Control - ", "");
+				string caption = (ent == null) ? "" : ent.prefab.name.Replace ("Control - ", "");
 
 				if (ent != null)
 				{
 					if (ent.tex != null)
 					{
-						GUI.DrawTexture(inner, ent.tex);
+						GUI.DrawTexture (inner, ent.tex);
 					}
 					else if (mMode != Mode.DetailedMode)
 					{
-						GUI.Label(inner, caption, mStyle);
+						GUI.Label (inner, caption, mStyle);
 						caption = "";
 					}
 				}
-				else GUI.Label(inner, "Add", mStyle);
+				else GUI.Label (inner, "Add", mStyle);
 
 				if (mMode == Mode.DetailedMode)
 				{
-					GUI.backgroundColor = new Color(1f, 1f, 1f, 0.5f);
-					GUI.contentColor = new Color(1f, 1f, 1f, 0.7f);
-					GUI.Label(new Rect(rect.x, rect.y + rect.height, rect.width, 32f), caption, "ProgressBarBack");
+					GUI.backgroundColor = new Color (1f, 1f, 1f, 0.5f);
+					GUI.contentColor = new Color (1f, 1f, 1f, 0.7f);
+					GUI.Label (new Rect (rect.x, rect.y + rect.height, rect.width, 32f), caption, "ProgressBarBack");
 					GUI.contentColor = Color.white;
 					GUI.backgroundColor = Color.white;
 				}
@@ -1004,18 +999,18 @@ public class UIPrefabTool : EditorWindow
 					x = cellPadding;
 				}
 			}
-			GUILayout.Space(y);
+			GUILayout.Space (y);
 		}
-		GUILayout.EndScrollView();
+		GUILayout.EndScrollView ();
 
 		// Mode
-		Mode modeAfter = (Mode)EditorGUILayout.EnumPopup(mMode);
+		Mode modeAfter = (Mode)EditorGUILayout.EnumPopup (mMode);
 
 		if (modeAfter != mMode)
 		{
 			mMode = modeAfter;
 			mReset = true;
-			NGUISettings.SetEnum("NGUI Prefab Mode", mMode);
+			NGUISettings.SetEnum ("NGUI Prefab Mode", mMode);
 		}
 	}
 }

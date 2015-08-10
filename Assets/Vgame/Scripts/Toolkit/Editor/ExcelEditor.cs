@@ -144,7 +144,7 @@ namespace VgameEditor
 		/// </summary>
 		static List<string> GetExcelPathes ()
 		{
-			return FileTools.GetFiles (READ_DIR_NAME_EXCEL, EX_XLSX, EX_XLS);
+			return FileEx.GetFiles (READ_DIR_NAME_EXCEL, EX_XLSX, EX_XLS);
 		}
 
 		/// <summary>
@@ -183,7 +183,7 @@ namespace VgameEditor
 		/// <returns>The write pathes.</returns>
 		static List<string> GetWriteDirectories ()
 		{
-			return FileTools.GetDirectories (SAVE_DIR_NAME);
+			return FileEx.GetDirectories (SAVE_DIR_NAME);
 		}
 
 		/// <summary>
@@ -191,7 +191,7 @@ namespace VgameEditor
 		/// </summary>
 		static void ClearData ()
 		{
-			List<string> files = FileTools.GetFiles (GetWriteDirectories ());
+			List<string> files = FileEx.GetFiles (GetWriteDirectories ());
 			foreach (string file in files)
 			{
 				Debug.Log ("删除:" + file);
@@ -334,8 +334,8 @@ namespace VgameEditor
 			sb.AppendLine ("using System.Collections.Generic;");
 			sb.AppendLine ("using Vgame.Data;");
 			sb.AppendLine ("");
-			string className = table.TableName;
-			StringTools.ToUpperFirstChar (ref className);
+			string className = table.TableName.ToUpperFirstChar ();
+//			StringTools.ToUpperFirstChar (ref className);
 			sb.AppendLine ("public class " + className + ":DataObject");
 			sb.AppendLine ("{");
 			for (int i = 0; i < fields.Length; i++)
@@ -355,7 +355,7 @@ namespace VgameEditor
 						classes.Add (JSONEditor.ToClass (value, className + "_" + field));	
 					}
 				}
-				StringTools.ToUpperFirstChar (ref field);
+				field = field.ToUpperFirstChar ();
 				sb.AppendLine ("\tpublic " + type + " " + field + ";");	
 			}
 			sb.AppendLine ("}");
@@ -388,8 +388,8 @@ namespace VgameEditor
 			string[] fieldTypes = ReadFieldTypes (table);
 
 			StringBuilder sb = new StringBuilder ();
-			string tableName = table.TableName;
-			StringTools.ToUpperFirstChar (ref tableName);
+			string tableName = table.TableName.ToUpperFirstChar ();
+//			StringTools.ToUpperFirstChar (ref tableName);
 			sb.AppendLine (tableName + " =");
 			sb.AppendLine ("{");
 			for (int i = 3; i < rows; i++)

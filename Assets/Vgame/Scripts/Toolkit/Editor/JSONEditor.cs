@@ -32,7 +32,7 @@ namespace VgameEditor
 			{
 				JsonData value = de.Value as JsonData;
 				string key = de.Key.ToString ();
-				StringTools.ToUpperFirstChar (ref key);
+				key = key.ToUpperFirstChar ();
 				if (value.IsInt)
 				{
 					sb.AppendLine ("\tpublic int " + key + ";");	
