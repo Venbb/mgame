@@ -9,6 +9,54 @@ namespace Vgame.ToolKit
 	public static class StringEx
 	{
 		/// <summary>
+		/// 裁剪字符串
+		/// </summary>
+		/// <param name="str">String.</param>
+		/// <param name="len">Length.</param>
+		/// <param name="endStr">End string.</param>
+		public static string Cut (this string str, int len, string endStr = "...")
+		{
+			if (string.IsNullOrEmpty (str) || len <= 0) return string.Empty;
+
+			string nstr = str;
+
+			int nlen = nstr.Length;
+			int index = 0;
+			while (index < len && index < nlen)
+			{
+				if ((int)nstr [index] > 128)
+				{
+					len--;
+				}
+				index++;
+			}
+			if (len < nlen)
+			{
+				nstr = nstr.Substring (0, len) + endStr;
+			}
+			return nstr;
+		}
+
+		/// <summary>
+		/// 获取字符长度
+		/// </summary>
+		/// <returns>The lenght.</returns>
+		/// <param name="str">String.</param>
+		public static int GetLenght (this string str)
+		{
+			if (string.IsNullOrEmpty (str)) return 0;
+			int len = str.Length;
+			int trueLen = len;
+			int i = 0;
+			while (i < len)
+			{
+				if ((int)str [i] > 128) trueLen++;
+				i++;
+			}
+			return trueLen;
+		}
+
+		/// <summary>
 		/// 首字母大写
 		/// </summary>
 		/// <returns>The upper first char.</returns>
@@ -45,9 +93,10 @@ namespace Vgame.ToolKit
 		/// </summary>
 		/// <returns>The encode.</returns>
 		/// <param name="str">String.</param>
-		public static string Base64Encode (string str)
+		public static string ToBase64String (this string str)
 		{
-			byte[] bytes = Encoding.UTF8.GetBytes (str);
+			string nstr = str;
+			byte[] bytes = Encoding.UTF8.GetBytes (nstr);
 			return Convert.ToBase64String (bytes);
 		}
 
@@ -56,9 +105,10 @@ namespace Vgame.ToolKit
 		/// </summary>
 		/// <returns>The decode.</returns>
 		/// <param name="str">String.</param>
-		public static string Base64Decode (string str)
+		public static string FromBase64String (this string str)
 		{
-			byte[] bytes = Convert.FromBase64String (str);
+			string nstr = str;
+			byte[] bytes = Convert.FromBase64String (nstr);
 			return Encoding.UTF8.GetString (bytes);
 		}
 
@@ -66,9 +116,10 @@ namespace Vgame.ToolKit
 		/// 压缩字符串
 		/// </summary>
 		/// <param name="str">String.</param>
-		public static string Compress (string str)
+		public static string Compress (this string str)
 		{
-			byte[] bytes = Encoding.UTF8.GetBytes (str);
+			string nstr = str;
+			byte[] bytes = Encoding.UTF8.GetBytes (nstr);
 			bytes = ByteEx.Compress (bytes);
 			return Convert.ToBase64String (bytes);
 		}
@@ -77,9 +128,10 @@ namespace Vgame.ToolKit
 		/// 解压字符串
 		/// </summary>
 		/// <param name="str">String.</param>
-		public static string Decompress (string str)
+		public static string Decompress (this string str)
 		{
-			byte[] bytes = Convert.FromBase64String (str);
+			string nstr = str;
+			byte[] bytes = Convert.FromBase64String (nstr);
 			bytes = ByteEx.Decompress (bytes);
 			return Encoding.UTF8.GetString (bytes);
 		}
