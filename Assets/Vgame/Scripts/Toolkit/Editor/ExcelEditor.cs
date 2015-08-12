@@ -222,7 +222,7 @@ namespace VgameEditor
 			foreach (string str in pathes)
 			{
 				string path = Path.Combine (str, table.TableName + SAVE_EXT);
-				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
+				StreamWriter sw = new StreamWriter (path, false, Encoding.UTF8);
 				sw.Write (sb);
 				sw.Close ();
 				Debug.Log ("生成CSV成功:" + path);	
@@ -303,7 +303,7 @@ namespace VgameEditor
 			foreach (string str in pathes)
 			{
 				string path = Path.Combine (str, table.TableName + SAVE_EXT);
-				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
+				StreamWriter sw = new StreamWriter (path, false, Encoding.UTF8);
 				sw.Write (sb);
 				sw.Close ();
 				Debug.Log ("生成JSON成功:" + path);
@@ -366,7 +366,7 @@ namespace VgameEditor
 			foreach (string str in pathes)
 			{
 				string path = Path.Combine (str, className + SAVE_EXT);
-				StreamWriter sw = new StreamWriter (path, false, Encoding.Unicode);
+				StreamWriter sw = new StreamWriter (path, false, Encoding.UTF8);
 				sw.Write (sb);
 				sw.Close ();
 				Debug.Log ("生成Class成功:" + path);
@@ -458,7 +458,7 @@ namespace VgameEditor
 			foreach (string str in pathes)
 			{
 				string path = Path.Combine (str, "ConfigData" + SAVE_EXT);
-				StreamWriter sw = new StreamWriter (path, true, Encoding.Unicode);
+				StreamWriter sw = new StreamWriter (path, true, Encoding.UTF8);
 				sw.Write (sb);
 				sw.Close ();
 				Debug.Log ("生成Lua成功:" + path);
