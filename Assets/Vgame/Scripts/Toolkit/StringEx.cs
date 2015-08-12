@@ -3,6 +3,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.GZip;
 using System;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace Vgame.ToolKit
 {
@@ -134,6 +135,36 @@ namespace Vgame.ToolKit
 			byte[] bytes = Convert.FromBase64String (nstr);
 			bytes = ByteEx.Decompress (bytes);
 			return Encoding.UTF8.GetString (bytes);
+		}
+
+		/// <summary>
+		/// MD5加密
+		/// </summary>
+		/// <returns>The d5.</returns>
+		/// <param name="str">String.</param>
+		public static string MD5 (this string str)
+		{
+			MD5 md5 = new MD5CryptoServiceProvider ();
+			byte[] bytes = md5.ComputeHash (Encoding.UTF8.GetBytes (str));
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				//将每个字节转为16进制
+				sb.Append (bytes [i].ToString ("x2"));
+			}
+			return sb.ToString ();
+		}
+
+		/// <summary>
+		/// SHA1加密
+		/// </summary>
+		/// <returns>The a1.</returns>
+		/// <param name="str">String.</param>
+		public static string SHA1 (this string str)
+		{
+			SHA1 sha = new SHA1CryptoServiceProvider ();
+			byte[] bytes = sha.ComputeHash (Encoding.UTF8.GetBytes (str));
+			return BitConverter.ToString (bytes);
 		}
 	}
 }
