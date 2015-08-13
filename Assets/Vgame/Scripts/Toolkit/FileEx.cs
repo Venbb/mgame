@@ -14,23 +14,46 @@ namespace Vgame.ToolKit
 		/// </summary>
 		/// <param name="filesPath">Files path.</param>
 		/// <param name="zipFilePath">Zip file path.</param>
-		public static void CreateZipFile (string filesPath, string zipFilePath)
+		/// <param name = "saveName"></param>
+		public static void CreateZipFile (string filesPath, string zipFilePath, string saveName = "vgame")
 		{
+			Debug.Log (filesPath);
+			Debug.Log (Path.GetFileNameWithoutExtension (filesPath));
 			if (!Directory.Exists (filesPath))
 			{
-				Debug.Log (string.Format ("Cannot find directory '{0}'", filesPath));
+				Debug.LogError (string.Format ("Cannot find directory:'{0}'", filesPath));
 				return;
+			}
+			string[] filenames = Directory.GetFiles (filesPath);
+			List<string> sourcePathes = new List<string> ();
+			foreach (string path in filenames)
+			{
+				sourcePathes.Add (path);
+			}
+			CreateZipFile (sourcePathes, zipFilePath, saveName);
+		}
+
+		/// <summary>
+		/// 创建压缩文件
+		/// </summary>
+		/// <param name="sourcePathes">Source pathes.</param>
+		/// <param name="zipFilePath">Zip file path.</param>
+		/// <param name="saveName">Save name.</param>
+		public static void CreateZipFile (List<string> sourcePathes, string zipFilePath, string saveName = "vgame")
+		{
+			zipFilePath = Path.Combine (zipFilePath, saveName + ".zip");
+			if (File.Exists (zipFilePath))
+			{
+				File.Delete (zipFilePath);
 			}
 			try
 			{
-				string[] filenames = Directory.GetFiles (filesPath);
 				using (var s = new ZipOutputStream (File.Create (zipFilePath)))
 				{
-
 					s.SetLevel (9); // 压缩级别 0-9
 					//s.Password = "123"; //Zip压缩文件密码
 					var buffer = new byte[4096]; //缓冲区大小
-					foreach (string file in filenames)
+					foreach (string file in sourcePathes)
 					{
 						var entry = new ZipEntry (Path.GetFileName (file));
 						entry.DateTime = DateTime.Now;
@@ -49,10 +72,11 @@ namespace Vgame.ToolKit
 					s.Finish ();
 					s.Close ();
 				}
+				Debug.Log (string.Format ("Create zip success:'{0}'", zipFilePath));
 			}
 			catch (Exception ex)
 			{
-				Debug.Log (string.Format ("Exception during processing {0}", ex));
+				Debug.LogError (string.Format ("Exception during processing:{0}", ex));
 			}
 		}
 
@@ -60,31 +84,30 @@ namespace Vgame.ToolKit
 		/// 解压文件
 		/// </summary>
 		/// <param name="zipFilePath">Zip file path.</param>
-		public static void UnZipFile (string zipFilePath)
+		/// <param name = "outPutPath"></param>
+		/// <param name = "autoDelete"></param>
+		public static void UnZipFile (string zipFilePath, string outPutPath = "", bool autoDelete = true)
 		{
 			if (!File.Exists (zipFilePath))
 			{
-				Debug.Log (string.Format ("Cannot find file '{0}'", zipFilePath));
+				Debug.LogError (string.Format ("Cannot find file '{0}'", zipFilePath));
 				return;
+			}
+			//默认解压到当前文件夹
+			outPutPath = string.IsNullOrEmpty (outPutPath) ? Path.GetDirectoryName (zipFilePath) : outPutPath;
+			if (!Directory.Exists (outPutPath))
+			{
+				Directory.CreateDirectory (outPutPath);
 			}
 			using (var s = new ZipInputStream (File.OpenRead (zipFilePath)))
 			{
 				ZipEntry theEntry;
 				while ((theEntry = s.GetNextEntry ()) != null)
 				{
-					Console.WriteLine (theEntry.Name);
-
-					string directoryName = Path.GetDirectoryName (theEntry.Name);
 					string fileName = Path.GetFileName (theEntry.Name);
-
-					// create directory
-					if (directoryName.Length > 0)
-					{
-						Directory.CreateDirectory (directoryName);
-					}
-
+					Debug.Log (fileName);
 					if (string.IsNullOrEmpty (fileName)) return;
-					using (FileStream streamWriter = File.Create (theEntry.Name))
+					using (FileStream streamWriter = File.Create (Path.Combine (outPutPath, fileName)))
 					{
 
 						int size = 2048;
@@ -92,17 +115,13 @@ namespace Vgame.ToolKit
 						while (true)
 						{
 							size = s.Read (data, 0, data.Length);
-							if (size > 0)
-							{
-								streamWriter.Write (data, 0, size);
-							}
-							else
-							{
-								break;
-							}
+							if (size <= 0) break;
+							streamWriter.Write (data, 0, size);
 						}
 					}
 				}
+				if (autoDelete) File.Delete (zipFilePath);
+				Debug.Log ("UnZipFile Success!");
 			}
 		}
 
@@ -111,7 +130,7 @@ namespace Vgame.ToolKit
 		/// </summary>
 		/// <returns>返回包含指定路径片段的所有文件夹</returns>
 		/// <param name="pathPart">路径片段</param>
-		public static List<string> GetDirectories (string pathPart)
+		public static List<string> GetDirectoriesInpart (string pathPart)
 		{
 			List<string> pathes = new List<string> ();
 			string fileName = pathPart.Contains ("/") ? pathPart.Substring (pathPart.LastIndexOf ("/") + 1) : pathPart;
@@ -130,9 +149,35 @@ namespace Vgame.ToolKit
 		/// <returns>返回指定目录片段下的所有文件</returns>
 		/// <param name="pathPart">路径片段</param>
 		/// <param name = "extents">指定要查找的文件扩展名</param>
-		public static List<string> GetFiles (string pathPart, params string[] extents)
+		public static List<string> GetFilesInPart (string pathPart, params string[] extents)
 		{
-			return GetFiles (GetDirectories (pathPart), extents);
+			return GetFiles (GetDirectoriesInpart (pathPart), extents);
+		}
+
+		/// <summary>
+		/// 查找文件
+		/// </summary>
+		/// <returns>The files.</returns>
+		/// <param name="path">Path.</param>
+		/// <param name="extents">Extents.</param>
+		public static List<string> GetFiles (string path, params string[] extents)
+		{
+			List<string> pathes = new List<string> ();
+			if (!Directory.Exists (path))
+			{
+				Debug.Log (string.Format ("Cannot find directory '{0}'", path));
+				return pathes;
+			}
+			string[] files = Directory.GetFiles (path);
+			foreach (string file in files)
+			{
+				string regexStr = string.Format (@"{0}", string.Join ("|", extents));
+				if (Regex.IsMatch (file, regexStr))
+				{
+					pathes.Add (file);
+				}
+			}
+			return pathes;
 		}
 
 		/// <summary>

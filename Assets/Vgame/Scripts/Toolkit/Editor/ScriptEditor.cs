@@ -18,7 +18,8 @@ namespace VgameEditor
 		/// </summary>
 		public static void CreateCSharpScript ()
 		{
-			foreach (Object o in Selection.objects)
+			Object[] objs = Selection.GetFiltered (typeof(Object), SelectionMode.Assets);
+			foreach (Object o in objs)
 			{
 				string path = AssetDatabase.GetAssetPath (o);
 				StringBuilder sb = new StringBuilder ();
@@ -44,7 +45,8 @@ namespace VgameEditor
 		/// </summary>
 		public static void CreateLuaScript ()
 		{
-			foreach (Object o in Selection.objects)
+			Object[] objs = Selection.GetFiltered (typeof(Object), SelectionMode.Assets);
+			foreach (Object o in objs)
 			{
 				string path = AssetDatabase.GetAssetPath (o);
 				//				File.Create (path);

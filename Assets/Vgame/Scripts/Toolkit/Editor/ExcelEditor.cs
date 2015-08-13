@@ -144,7 +144,7 @@ namespace VgameEditor
 		/// </summary>
 		static List<string> GetExcelPathes ()
 		{
-			return FileEx.GetFiles (READ_DIR_NAME_EXCEL, EX_XLSX, EX_XLS);
+			return FileEx.GetFilesInPart (READ_DIR_NAME_EXCEL, EX_XLSX, EX_XLS);
 		}
 
 		/// <summary>
@@ -183,7 +183,7 @@ namespace VgameEditor
 		/// <returns>The write pathes.</returns>
 		static List<string> GetWriteDirectories ()
 		{
-			return FileEx.GetDirectories (SAVE_DIR_NAME);
+			return FileEx.GetFilesInPart (SAVE_DIR_NAME);
 		}
 
 		/// <summary>
