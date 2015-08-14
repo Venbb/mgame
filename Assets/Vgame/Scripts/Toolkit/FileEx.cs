@@ -126,7 +126,7 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
-		/// 查找路径
+		/// 根据路径片段获取所有子文件夹
 		/// </summary>
 		/// <returns>返回包含指定路径片段的所有文件夹</returns>
 		/// <param name="pathPart">路径片段</param>
@@ -144,7 +144,7 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
-		/// 查找文件
+		/// 根据路径片段获取所有子文件
 		/// </summary>
 		/// <returns>返回指定目录片段下的所有文件</returns>
 		/// <param name="pathPart">路径片段</param>
@@ -155,12 +155,26 @@ namespace Vgame.ToolKit
 		}
 
 		/// <summary>
+		/// 获取所有子文件夹
+		/// </summary>
+		/// <returns>The directories.</returns>
+		/// <param name="path">Path.</param>
+		public static List<string> GetDirectories (string path)
+		{
+			List<string> directories = new List<string> ();
+			string[] pathes = Directory.GetDirectories (path);
+			foreach (string str in pathes) directories.Add (str);
+			return directories;
+		}
+
+		/// <summary>
 		/// 查找文件
 		/// </summary>
 		/// <returns>The files.</returns>
 		/// <param name="path">Path.</param>
+		/// <param name = "isEndExtent"></param>
 		/// <param name="extents">Extents.</param>
-		public static List<string> GetFiles (string path, params string[] extents)
+		public static List<string> GetFiles (string path, bool isEndExtent, params string[] extents)
 		{
 			List<string> pathes = new List<string> ();
 			if (!Directory.Exists (path))
@@ -171,8 +185,8 @@ namespace Vgame.ToolKit
 			string[] files = Directory.GetFiles (path);
 			foreach (string file in files)
 			{
-				string regexStr = string.Format (@"{0}", string.Join ("|", extents));
-				if (Regex.IsMatch (file, regexStr))
+				string regexStr = string.Format (@"^.*.(?i)({0})$", string.Join ("|", extents));
+				if (Regex.IsMatch (file, regexStr) == isEndExtent)
 				{
 					pathes.Add (file);
 				}
@@ -195,7 +209,7 @@ namespace Vgame.ToolKit
 
 				foreach (string file in files)
 				{
-					string regexStr = string.Format (@"{0}", string.Join ("|", extents));
+					string regexStr = string.Format (@"^.*.(?i)({0})$", string.Join ("|", extents));
 					if (Regex.IsMatch (file, regexStr))
 					{
 						pathes.Add (file);
