@@ -10,83 +10,74 @@ namespace Vgame.ToolKit
 	public static class FileEx
 	{
 		/// <summary>
-		/// 创建压缩文件
+		/// 压缩文件
 		/// </summary>
-		/// <param name="filesPath">Files path.</param>
-		/// <param name="zipFilePath">Zip file path.</param>
-		/// <param name = "saveName"></param>
-		public static void CreateZipFile (string filesPath, string zipFilePath, string saveName = "vgame")
+		/// <param name="strFile">压缩源路径</param>
+		/// <param name="strZip">压缩文件保存路径</param>
+		/// <param name = "rootDir">压缩文件根目录</param>
+		/// <param name = "isEndExtent">是否压缩包含扩展名的文件</param>
+		/// <param name = "extents">用于筛选的扩展名</param>
+		public static void ZipFile (string strFile, string strZip, string rootDir = "", bool isEndExtent = false, params string[] extents)
 		{
-			Debug.Log (filesPath);
-			Debug.Log (Path.GetFileNameWithoutExtension (filesPath));
-			if (!Directory.Exists (filesPath))
-			{
-				Debug.LogError (string.Format ("Cannot find directory:'{0}'", filesPath));
-				return;
-			}
-			string[] filenames = Directory.GetFiles (filesPath);
-			List<string> sourcePathes = new List<string> ();
-			foreach (string path in filenames)
-			{
-				sourcePathes.Add (path);
-			}
-			CreateZipFile (sourcePathes, zipFilePath, saveName);
+			var s = new ZipOutputStream (File.Create (strZip));
+			s.SetLevel (9); // 0 - store only to 9 - means best compression
+			zip (strFile, s, rootDir, isEndExtent, extents);
+			s.Finish ();
+			s.Close ();
 		}
 
 		/// <summary>
-		/// 创建压缩文件
+		/// 压缩文件
 		/// </summary>
-		/// <param name="sourcePathes">Source pathes.</param>
-		/// <param name="zipFilePath">Zip file path.</param>
-		/// <param name="saveName">Save name.</param>
-		public static void CreateZipFile (List<string> sourcePathes, string zipFilePath, string saveName = "vgame")
+		/// <param name="files">压缩源</param>
+		/// <param name="strZip">压缩文件保存路径</param>
+		/// <param name = "rootDir">压缩文件根目录</param>
+		/// <param name = "isEndExtent">是否压缩包含扩展名的文件</param>
+		/// <param name = "extents">用于筛选的扩展名</param>
+		public static void ZipFile (List<string> files, string strZip, string rootDir = "", bool isEndExtent = false, params string[] extents)
 		{
-			zipFilePath = Path.Combine (zipFilePath, saveName + ".zip");
-			if (File.Exists (zipFilePath))
+			var s = new ZipOutputStream (File.Create (strZip));
+			s.SetLevel (9); // 0 - store only to 9 - means best compression
+			foreach (string str in files) zip (str, s, rootDir, isEndExtent, extents);
+			s.Finish ();
+			s.Close ();
+		}
+
+		static void zip (string strFile, ZipOutputStream s, string rootDir = "", bool isEndExtent = false, params string[] extents)
+		{
+			List<string> filenames = GetFileSystemEntries (strFile, isEndExtent, extents);
+			foreach (string file in filenames)
 			{
-				File.Delete (zipFilePath);
-			}
-			try
-			{
-				using (var s = new ZipOutputStream (File.Create (zipFilePath)))
+				if (!Directory.Exists (file))
 				{
-					s.SetLevel (9); // 压缩级别 0-9
-					//s.Password = "123"; //Zip压缩文件密码
-					var buffer = new byte[4096]; //缓冲区大小
-					foreach (string file in sourcePathes)
-					{
-						var entry = new ZipEntry (Path.GetFileName (file));
-						entry.DateTime = DateTime.Now;
-						s.PutNextEntry (entry);
-						using (FileStream fs = File.OpenRead (file))
-						{
-							int sourceBytes;
-							do
-							{
-								sourceBytes = fs.Read (buffer, 0, buffer.Length);
-								s.Write (buffer, 0, sourceBytes);
-							}
-							while (sourceBytes > 0);
-						}
-					}
-					s.Finish ();
-					s.Close ();
+					FileStream fs = File.OpenRead (file);
+					var buffer = new byte[fs.Length];
+					fs.Read (buffer, 0, buffer.Length);
+					string tempfile = Path.Combine (rootDir, Path.GetFileName (file));
+					var entry = new ZipEntry (tempfile);
+
+					entry.DateTime = DateTime.Now;
+					entry.Size = fs.Length;
+					fs.Close ();
+					s.PutNextEntry (entry);
+
+					s.Write (buffer, 0, buffer.Length);
+
 				}
-				Debug.Log (string.Format ("Create zip success:'{0}'", zipFilePath));
-			}
-			catch (Exception ex)
-			{
-				Debug.LogError (string.Format ("Exception during processing:{0}", ex));
+				else zip (file, s, Path.Combine (rootDir, Path.GetFileName (file)), isEndExtent, extents);
 			}
 		}
 
 		/// <summary>
 		/// 解压文件
 		/// </summary>
-		/// <param name="zipFilePath">Zip file path.</param>
-		/// <param name = "outPutPath"></param>
-		/// <param name = "autoDelete"></param>
-		public static void UnZipFile (string zipFilePath, string outPutPath = "", bool autoDelete = true)
+		/// <param name="zipFilePath">要解压的文件路径</param>
+		/// <param name = "outPutPath">默认解压到当前文件夹</param>
+		/// <param name = "autoDelete">是否自动删除压缩文件</param>
+		/// <param name = "isSameDir">是否解压到同一目录</param>
+		/// <param name = "isCreate">是否新建一个同名文件夹</param>
+		/// <param name = "isAppend">是否以追加方式解压</param>
+		public static void UnZipFile (string zipFilePath, string outPutPath = "", bool autoDelete = true, bool isSameDir = false, bool isCreate = true, bool isAppend = false)
 		{
 			if (!File.Exists (zipFilePath))
 			{
@@ -95,6 +86,11 @@ namespace Vgame.ToolKit
 			}
 			//默认解压到当前文件夹
 			outPutPath = string.IsNullOrEmpty (outPutPath) ? Path.GetDirectoryName (zipFilePath) : outPutPath;
+			if (isCreate) outPutPath = Path.Combine (outPutPath, Path.GetFileNameWithoutExtension (zipFilePath));
+			if (!isAppend)
+			{
+				DeleteFiles (outPutPath);
+			}
 			if (!Directory.Exists (outPutPath))
 			{
 				Directory.CreateDirectory (outPutPath);
@@ -107,7 +103,12 @@ namespace Vgame.ToolKit
 					string fileName = Path.GetFileName (theEntry.Name);
 					Debug.Log (fileName);
 					if (string.IsNullOrEmpty (fileName)) return;
-					using (FileStream streamWriter = File.Create (Path.Combine (outPutPath, fileName)))
+					string outPath = isSameDir ? outPutPath : Path.Combine (outPutPath, Path.GetDirectoryName (theEntry.Name));
+					if (!Directory.Exists (outPath))
+					{
+						Directory.CreateDirectory (outPath);
+					}
+					using (FileStream streamWriter = File.Create (Path.Combine (outPath, fileName)))
 					{
 
 						int size = 2048;
@@ -122,6 +123,50 @@ namespace Vgame.ToolKit
 				}
 				if (autoDelete) File.Delete (zipFilePath);
 				Debug.Log ("UnZipFile Success!");
+			}
+		}
+
+		/// <summary>
+		///  清除本地存储文件
+		/// </summary>
+		public static void ClearPersistentDataPath ()
+		{
+			DeleteFiles (Application.persistentDataPath);
+		}
+
+		/// <summary>
+		/// 清除本地存储流文件
+		/// </summary>
+		public static void ClearStreamingAssetsPath ()
+		{
+			DeleteFiles (Application.streamingAssetsPath);
+		}
+
+		/// <summary>
+		/// 删除文件
+		/// </summary>
+		/// <param name="path">Path.</param>
+		public static void DeleteFiles (string path)
+		{
+			if (!Directory.Exists (path))
+			{
+				Debug.LogWarning (string.Format ("DeleteFiles Cannot find file '{0}'", path));
+				return;
+			}
+			string[] pathes = Directory.GetFiles (path);
+			foreach (string p in pathes)
+			{
+				if (File.Exists (p)) File.Delete (p);
+			}
+			pathes = Directory.GetDirectories (path);
+			foreach (string p in pathes)
+			{
+				DeleteFiles (p);
+			}
+			pathes = Directory.GetDirectories (path);
+			if (pathes.Length == 0)
+			{
+				Directory.Delete (path);
 			}
 		}
 
@@ -165,6 +210,28 @@ namespace Vgame.ToolKit
 			string[] pathes = Directory.GetDirectories (path);
 			foreach (string str in pathes) directories.Add (str);
 			return directories;
+		}
+
+		/// <summary>
+		/// 获取指定路径下得所有文件及文件夹
+		/// </summary>
+		/// <returns>The file system entries.</returns>
+		/// <param name="path">Path.</param>
+		/// <param name="isEndExtent">If set to <c>true</c> is end extent.</param>
+		/// <param name="extents">Extents.</param>
+		public static List<string> GetFileSystemEntries (string path, bool isEndExtent, params string[] extents)
+		{
+			List<string> entries = new List<string> ();
+			string[] files = Directory.GetFileSystemEntries (path);
+			foreach (string file in files)
+			{
+				string regexStr = string.Format (@"^.*.(?i)({0})$", string.Join ("|", extents));
+				if (Regex.IsMatch (file, regexStr) == isEndExtent)
+				{
+					entries.Add (file);
+				}
+			}
+			return entries;
 		}
 
 		/// <summary>

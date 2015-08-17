@@ -15,15 +15,13 @@ namespace VgameEditor
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To JSON", false, 1)]
 		static void ExcelToJSON ()
 		{
-			FileEx.CreateZipFile (Application.persistentDataPath, Application.persistentDataPath);
-			//ExcelEditor.ExcelToJSON ();
+			ExcelEditor.ExcelToJSON ();
 		}
 
 		[MenuItem ("Vgame/ToolKit/Excel/Excel To Class", false, 1)]
 		static void ExcelToClass ()
 		{
-//			ExcelEditor.ExcelToClass ();
-			FileEx.UnZipFile (Application.persistentDataPath + "/vgame.zip");
+			ExcelEditor.ExcelToClass ();
 		}
 
 		//		[MenuItem ("Vgame/ToolKit/Excel/")]
@@ -38,11 +36,11 @@ namespace VgameEditor
 			ExcelEditor.ExcelToLua ();
 		}
 
-		[MenuItem ("Vgame/")]
-		static void Breaker ()
-		{
-			//分割线
-		}
+		//		[MenuItem ("Vgame/")]
+		//		static void Breaker ()
+		//		{
+		//			//分割线
+		//		}
 
 		[MenuItem ("Vgame/Help")]
 		static void Help ()
