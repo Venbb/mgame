@@ -60,10 +60,10 @@ namespace VgameEditor
 			ScriptEditor.CreateCSharpScript ();
 		}
 
-		[MenuItem ("Assets/Vgame/Create/ZIP", false, 12)]
+		[MenuItem ("Assets/Vgame/Create/Create ZIP", false, 12)]
 		static void CreateZipFile ()
 		{
-			FileEditor.CreateZipFile ();
+			AssetsEditor.CreateZipFile ();
 		}
 	}
 }

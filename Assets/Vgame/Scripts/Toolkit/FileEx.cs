@@ -10,6 +10,24 @@ namespace Vgame.ToolKit
 	public static class FileEx
 	{
 		/// <summary>
+		/// 流文件保存路径
+		/// </summary>
+		/// <value>The streaming assets path.</value>
+		public static string StreamingAssetsPath
+		{
+			get
+			{
+				string path = Application.streamingAssetsPath;
+				#if UNITY_IPHONE
+				path=Path.Combine(path,"iOS");
+				#elseif UNITY_ANDROID
+				path=Path.Combine(path,"Android");
+				#endif
+				return path;
+			}
+		}
+
+		/// <summary>
 		/// 压缩文件
 		/// </summary>
 		/// <param name="strFile">压缩源路径</param>
@@ -129,28 +147,22 @@ namespace Vgame.ToolKit
 		/// <summary>
 		///  清除本地存储文件
 		/// </summary>
-		public static void ClearPersistentDataPath ()
+		public static void ClearPersistentData ()
 		{
-			DeleteFiles (Application.persistentDataPath);
-		}
-
-		/// <summary>
-		/// 清除本地存储流文件
-		/// </summary>
-		public static void ClearStreamingAssetsPath ()
-		{
-			DeleteFiles (Application.streamingAssetsPath);
+			DeleteFiles (Application.persistentDataPath, false);
 		}
 
 		/// <summary>
 		/// 删除文件
 		/// </summary>
 		/// <param name="path">Path.</param>
-		public static void DeleteFiles (string path)
+		/// <param name = "delSelf">是否删除根目录</param>
+		public static void DeleteFiles (string path, bool delSelf = true)
 		{
-			if (!Directory.Exists (path))
+			if (!delSelf)
 			{
-				Debug.LogWarning (string.Format ("DeleteFiles Cannot find file '{0}'", path));
+				string[] entries = Directory.GetFileSystemEntries (path);
+				foreach (string p in entries) DeleteFiles (p, true);
 				return;
 			}
 			string[] pathes = Directory.GetFiles (path);
@@ -158,6 +170,7 @@ namespace Vgame.ToolKit
 			{
 				if (File.Exists (p)) File.Delete (p);
 			}
+			if (!Directory.Exists (path)) return;
 			pathes = Directory.GetDirectories (path);
 			foreach (string p in pathes)
 			{
