@@ -1,0 +1,52 @@
+#!/bin/bash
+echo ======================================
+echo 1、将此bat放在您需要签名的apk同级目录下
+echo 2、修改ANDROID_TOOLS_PATH为您Android SDK 安装目录的tools目录
+echo 3、修改KEYSTORE_PATH路径到你生成的keystore目录
+echo 4、将FILE_NAME设置为需要签名的apk文件名
+echo 5、将keystore的密码unitypwd和别名ualias修改为自己的
+echo 6、执行结果将生成一个sign文件夹和一个zipalign文件夹，分别存放了签名后的APK和简化后的APK
+echo 7、此脚本是基于JDK1.6来签名的，如果之前的apk不是用此版本签名可能会出现"无法对jar进行签名"的情况，用ZIP工具打开，找到下面的目录META-INF，删除目录META-INF。
+echo 8、如果出现未提供-tsa或-tsacert的警告，签名指令后加上-tsa https://timestamp.geotrust.com/tsa
+echo ======================================
+# 当前路径
+Cur_Dir=$(cd `dirname $0`; pwd)
+# 文件名
+FILE_NAME="Untitled"
+# Android SDK路径
+ANDROID_TOOLS_PATH="/Users/niko/Documents/workspace/adt-bundle-mac-sdk/sdk/tools"
+# keystore路径
+KEYSTORE_PATH="${Cur_Dir}/unity.keystore"
+# apk存放路径
+APK_PATH="${Cur_Dir}/${FILE_NAME}.apk"
+# 签名的apk
+SIGN_APK_PATH="${Cur_Dir}/sign/${FILE_NAME}.apk"
+# 简化的apk
+ZIPALIGN_APK_PATH="${Cur_Dir}/zipalign/${FILE_NAME}.apk"
+# alias名字
+ALIAS_NAME="ualias"
+# keystore 密码
+STOREPASS=123456
+
+echo 开始签名⋯⋯
+# 如果sign文件夹不存在就创建一个
+if [ ! -d "${Cur_Dir}/sign" ]; then
+	mkdir "${Cur_Dir}/sign"
+fi
+# 执行签名
+jarsigner -verbose -keystore ${KEYSTORE_PATH} -storepass ${STOREPASS} -signedjar ${SIGN_APK_PATH} -digestalg SHA1 -sigalg MD5withRSA ${APK_PATH} ${ALIAS_NAME} -tsa https://timestamp.geotrust.com/tsa
+
+echo 签名成功⋯⋯开始简化
+# 如果zipalign文件夹不存在就创建一个
+if [ ! -d "${Cur_Dir}/zipalign" ]; then
+	mkdir "${Cur_Dir}/zipalign"
+fi
+# 进入Android SDK tools 目录
+cd ${ANDROID_TOOLS_PATH}
+# 如果同名简化apk存在，删除之
+if [ ! -d "${ZIPALIGN_APK_PATH}" ]; then
+	rm -if "${ZIPALIGN_APK_PATH}"
+fi
+# 执行简化
+zipalign -v 4 ${SIGN_APK_PATH} ${ZIPALIGN_APK_PATH}
+echo 好了！
