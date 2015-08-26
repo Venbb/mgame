@@ -21,7 +21,7 @@ public class Begin : MonoBehaviour
 //
 //		ao.Call ("Order", "", 1);
 		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.mm.IAPController");
-		ac.CallStatic ("init", "300009184004", "2F3CE83A8367CC82CF5F15D1A9269CEA", name, "onBillingFinish");
+		ac.CallStatic ("SetListener", name, "onBillingFinish");
 	}
 
 	public void hhs ()
