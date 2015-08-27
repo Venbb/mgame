@@ -20,7 +20,7 @@ public class Begin : MonoBehaviour
 //		Debug.Log ("ao==============2:" + ao);
 //
 //		ao.Call ("Order", "", 1);
-		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.mm.IAPController");
+		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
 		ac.CallStatic ("SetListener", name, "onBillingFinish");
 	}
 
@@ -32,7 +32,7 @@ public class Begin : MonoBehaviour
 	{
 		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买"))
 		{
-			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.mm.IAPController");
+			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
 			ac.CallStatic ("order", "30000918400401", 1);
 		}
 	}
