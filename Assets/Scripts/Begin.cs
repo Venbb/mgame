@@ -20,8 +20,8 @@ public class Begin : MonoBehaviour
 //		Debug.Log ("ao==============2:" + ao);
 //
 //		ao.Call ("Order", "", 1);
-		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
-		ac.CallStatic ("SetListener", name, "onBillingFinish");
+//		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
+//		ac.CallStatic ("SetListener", name, "onBillingFinish");
 	}
 
 	public void hhs ()
@@ -32,9 +32,14 @@ public class Begin : MonoBehaviour
 	{
 		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买"))
 		{
-			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
-			ac.CallStatic ("order", "30000918400401", 1);
+			MM_IAPController.Instance.Order ("30000918400401", 1, onback);
+//			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
+//			ac.CallStatic ("order", "30000918400401", 1);
 		}
+	}
+	void onback (string result)
+	{
+		Debug.Log ("onback:" + result);
 	}
 	// Update is called once per frame
 	void Update ()
