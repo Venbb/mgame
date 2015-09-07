@@ -28,15 +28,17 @@ public class Begin : MonoBehaviour
 	{
 		Debug.Log ("klshdadhakjhk=====");
 	}
+
 	void OnGUI ()
 	{
-		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买"))
-		{
-			MM_IAPController.Instance.Order ("30000918400401", 1, onback);
-//			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
-//			ac.CallStatic ("order", "30000918400401", 1);
-		}
+//		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买"))
+//		{
+//			MM_IAPController.Instance.Order ("30000918400401", 1, onback);
+////			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
+////			ac.CallStatic ("order", "30000918400401", 1);
+//		}
 	}
+
 	void onback (string result)
 	{
 		Debug.Log ("onback:" + result);

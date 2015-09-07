@@ -19,8 +19,8 @@ namespace Vgame.ToolKit
 			{
 				string path = Application.streamingAssetsPath;
 				#if UNITY_IPHONE
-				path=Path.Combine(path,"iOS");
-				#elseif UNITY_ANDROID
+				path = Path.Combine (path, "iOS");
+				#elif UNITY_ANDROID
 				path=Path.Combine(path,"Android");
 				#endif
 				return path;
