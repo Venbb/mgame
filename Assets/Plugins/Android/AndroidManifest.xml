@@ -27,7 +27,7 @@
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
             <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="false" />
         </activity>
-        <meta-data android:name="iap_cm_appid" android:value="\0300009184004" />
+        <meta-data android:name="iap_cm_appid" android:value="\0300009184004" /><!--'\0'将数字字符串转换成字符，否则会出错-->
         <meta-data android:name="iap_cm_appkey" android:value="2F3CE83A8367CC82CF5F15D1A9269CEA" />
     </application>
     
