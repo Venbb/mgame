@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vgame.mgame"
-	android:installLocation="preferExternal"
+    package="cn.s7k7k.sheep"
     android:versionCode="1"
     android:versionName="1.0">
     <supports-screens
@@ -17,7 +16,7 @@
 		android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:debuggable="true">
-        <activity android:name="com.vgame.plugins.MainActivity"
+        <activity android:name="com.unity.plugins.MainActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +28,38 @@
         </activity>
         <meta-data android:name="iap_cm_appid" android:value="\0300009184004" /><!--'\0'将数字字符串转换成字符，否则会出错-->
         <meta-data android:name="iap_cm_appkey" android:value="2F3CE83A8367CC82CF5F15D1A9269CEA" />
+        
+        <!--电信爱游戏短信支付-->
+        <activity 
+	        android:name="cn.egame.terminal.paysdk.EgamePayActivity" 
+	        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" 
+	        android:screenOrientation="portrait"
+	        android:configChanges="orientation|keyboard|keyboardHidden"> 
+         </activity>
+
+		<activity
+            android:name="cn.play.dserv.EmpActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:exported="true" />
+
+        <service
+            android:name="cn.play.dserv.DService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="dservice"
+            android:process=":dservice_v1" >
+        </service>
+
+        <receiver
+            android:name="cn.play.dserv.DsReceiver"
+            android:process=":dservice_v1" >
+            <intent-filter>
+                <action android:name="cn.play.dservice" />
+            </intent-filter>
+        </receiver>
+        <meta-data android:name="EGAME_CHANNEL" android:value="10000000"  />
+      <!--电信爱游戏短信支付-->
+      
     </application>
     
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -38,4 +69,12 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.VIBRATE"/>
+	<uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+	<uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+	<uses-permission android:name="android.permission.CALL_PHONE"/>
 </manifest>
