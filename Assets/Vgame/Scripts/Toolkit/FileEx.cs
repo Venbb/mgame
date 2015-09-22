@@ -21,12 +21,33 @@ namespace Vgame.ToolKit
 				#if UNITY_IPHONE
 				path = Path.Combine (path, "iOS");
 				#elif UNITY_ANDROID
-				path=Path.Combine(path,"Android");
+				path = Path.Combine (path, "Android");
 				#endif
 				return path;
 			}
 		}
-
+		static string _persistentDataPath;
+		/// <summary>
+		/// Gets the persistent data path.
+		/// </summary>
+		/// <value>The persistent data path.</value>
+		public static string persistentDataPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty (_persistentDataPath))
+					_persistentDataPath = Application.persistentDataPath;
+				#if UNITY_EDITOR
+				#elif UNITY_ANDROID
+				if (string.IsNullOrEmpty (_persistentDataPath))
+				{
+					_persistentDataPath = AndroidPathEx.ExternalFilesDir;
+					if (string.IsNullOrEmpty (_persistentDataPath))_persistentDataPath = AndroidPathEx.FilesDir;
+				}
+				#endif
+				return _persistentDataPath;
+			}
+		}
 		/// <summary>
 		/// 压缩文件
 		/// </summary>
@@ -56,7 +77,8 @@ namespace Vgame.ToolKit
 		{
 			var s = new ZipOutputStream (File.Create (strZip));
 			s.SetLevel (9); // 0 - store only to 9 - means best compression
-			foreach (string str in files) zip (str, s, rootDir, isEndExtent, extents);
+			foreach (string str in files)
+				zip (str, s, rootDir, isEndExtent, extents);
 			s.Finish ();
 			s.Close ();
 		}
@@ -82,7 +104,8 @@ namespace Vgame.ToolKit
 					s.Write (buffer, 0, buffer.Length);
 
 				}
-				else zip (file, s, Path.Combine (rootDir, Path.GetFileName (file)), isEndExtent, extents);
+				else
+					zip (file, s, Path.Combine (rootDir, Path.GetFileName (file)), isEndExtent, extents);
 			}
 		}
 
@@ -104,7 +127,8 @@ namespace Vgame.ToolKit
 			}
 			//默认解压到当前文件夹
 			outPutPath = string.IsNullOrEmpty (outPutPath) ? Path.GetDirectoryName (zipFilePath) : outPutPath;
-			if (isCreate) outPutPath = Path.Combine (outPutPath, Path.GetFileNameWithoutExtension (zipFilePath));
+			if (isCreate)
+				outPutPath = Path.Combine (outPutPath, Path.GetFileNameWithoutExtension (zipFilePath));
 			if (!isAppend)
 			{
 				DeleteFiles (outPutPath);
@@ -120,7 +144,8 @@ namespace Vgame.ToolKit
 				{
 					string fileName = Path.GetFileName (theEntry.Name);
 					Debug.Log (fileName);
-					if (string.IsNullOrEmpty (fileName)) return;
+					if (string.IsNullOrEmpty (fileName))
+						return;
 					string outPath = isSameDir ? outPutPath : Path.Combine (outPutPath, Path.GetDirectoryName (theEntry.Name));
 					if (!Directory.Exists (outPath))
 					{
@@ -134,12 +159,14 @@ namespace Vgame.ToolKit
 						while (true)
 						{
 							size = s.Read (data, 0, data.Length);
-							if (size <= 0) break;
+							if (size <= 0)
+								break;
 							streamWriter.Write (data, 0, size);
 						}
 					}
 				}
-				if (autoDelete) File.Delete (zipFilePath);
+				if (autoDelete)
+					File.Delete (zipFilePath);
 				Debug.Log ("UnZipFile Success!");
 			}
 		}
@@ -149,7 +176,7 @@ namespace Vgame.ToolKit
 		/// </summary>
 		public static void ClearPersistentData ()
 		{
-			DeleteFiles (Application.persistentDataPath, false);
+			DeleteFiles (persistentDataPath, false);
 		}
 
 		/// <summary>
@@ -162,15 +189,18 @@ namespace Vgame.ToolKit
 			if (!delSelf)
 			{
 				string[] entries = Directory.GetFileSystemEntries (path);
-				foreach (string p in entries) DeleteFiles (p, true);
+				foreach (string p in entries)
+					DeleteFiles (p, true);
 				return;
 			}
 			string[] pathes = Directory.GetFiles (path);
 			foreach (string p in pathes)
 			{
-				if (File.Exists (p)) File.Delete (p);
+				if (File.Exists (p))
+					File.Delete (p);
 			}
-			if (!Directory.Exists (path)) return;
+			if (!Directory.Exists (path))
+				return;
 			pathes = Directory.GetDirectories (path);
 			foreach (string p in pathes)
 			{
@@ -195,7 +225,8 @@ namespace Vgame.ToolKit
 			string[] files = Directory.GetDirectories (Application.dataPath, fileName, SearchOption.AllDirectories);
 			foreach (string file in files)
 			{
-				if (!file.Contains (pathPart)) continue;
+				if (!file.Contains (pathPart))
+					continue;
 				pathes.Add (file);
 			}
 			return pathes;
@@ -221,7 +252,8 @@ namespace Vgame.ToolKit
 		{
 			List<string> directories = new List<string> ();
 			string[] pathes = Directory.GetDirectories (path);
-			foreach (string str in pathes) directories.Add (str);
+			foreach (string str in pathes)
+				directories.Add (str);
 			return directories;
 		}
 

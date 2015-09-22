@@ -23,7 +23,20 @@ public class Begin : MonoBehaviour
 //		AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
 //		ac.CallStatic ("SetListener", name, "onBillingFinish");
 //		MM_IAPController.Instance.Init ();
-		Egame_IAPController.Instance.Init ();
+//		Egame_IAPController.Instance.Init ();
+//		AndroidJavaClass ac = new AndroidJavaClass ("com.unity.plugins.PathEx");
+//		Debug.Log ("hasSDCard:" + ac.CallStatic<bool> ("hasSDCard"));
+//		Debug.Log ("isExternalStorageRemovable:" + ac.CallStatic<bool> ("isExternalStorageRemovable"));
+//		Debug.Log ("getRootDirectory:" + ac.CallStatic<string> ("getRootDirectory"));
+//		Debug.Log ("getFilesDir:" + ac.CallStatic<string> ("getFilesDir"));
+//		Debug.Log ("getExternalFilesDir:" + ac.CallStatic<string> ("getExternalFilesDir"));
+//		Debug.Log ("getExternalCacheDir:" + ac.CallStatic<string> ("getExternalCacheDir"));
+//		Debug.Log ("getCacheDir:" + ac.CallStatic<string> ("getCacheDir"));
+//		Debug.Log ("getDataDirectory:" + ac.CallStatic<string> ("getDataDirectory"));
+//		Debug.Log ("getDownloadCacheDirectory:" + ac.CallStatic<string> ("getDownloadCacheDirectory"));
+//		Debug.Log ("getExternalStorageDirectory:" + ac.CallStatic<string> ("getExternalStorageDirectory"));
+////		Debug.Log ("getExternalStoragePublicDirectory:" + ac.CallStatic<string> ("getExternalStoragePublicDirectory"));
+//		Debug.Log ("Application.persistentDataPath:" + Application.persistentDataPath);
 	}
 
 	public void hhs ()
@@ -33,7 +46,8 @@ public class Begin : MonoBehaviour
 
 	void OnGUI ()
 	{
-		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买")) {
+		if (GUI.Button (new Rect (30, 30, 200, 50), "立即购买"))
+		{
 //			MM_IAPController.Instance.Order ("30000918400401", 1, onback);
 //			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
 //			ac.CallStatic ("order", "30000918400401", 1);
