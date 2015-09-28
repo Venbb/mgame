@@ -25,18 +25,19 @@ public class Begin : MonoBehaviour
 //		MM_IAPController.Instance.Init ();
 //		Egame_IAPController.Instance.Init ();
 //		AndroidJavaClass ac = new AndroidJavaClass ("com.unity.plugins.PathEx");
-//		Debug.Log ("hasSDCard:" + ac.CallStatic<bool> ("hasSDCard"));
-//		Debug.Log ("isExternalStorageRemovable:" + ac.CallStatic<bool> ("isExternalStorageRemovable"));
-//		Debug.Log ("getRootDirectory:" + ac.CallStatic<string> ("getRootDirectory"));
-//		Debug.Log ("getFilesDir:" + ac.CallStatic<string> ("getFilesDir"));
-//		Debug.Log ("getExternalFilesDir:" + ac.CallStatic<string> ("getExternalFilesDir"));
-//		Debug.Log ("getExternalCacheDir:" + ac.CallStatic<string> ("getExternalCacheDir"));
-//		Debug.Log ("getCacheDir:" + ac.CallStatic<string> ("getCacheDir"));
-//		Debug.Log ("getDataDirectory:" + ac.CallStatic<string> ("getDataDirectory"));
-//		Debug.Log ("getDownloadCacheDirectory:" + ac.CallStatic<string> ("getDownloadCacheDirectory"));
-//		Debug.Log ("getExternalStorageDirectory:" + ac.CallStatic<string> ("getExternalStorageDirectory"));
-////		Debug.Log ("getExternalStoragePublicDirectory:" + ac.CallStatic<string> ("getExternalStoragePublicDirectory"));
-//		Debug.Log ("Application.persistentDataPath:" + Application.persistentDataPath);
+		Debug.Log ("Application.persistentDataPath:" + Application.persistentDataPath);
+		Debug.Log ("hasSDCard:" + Vgame.ToolKit.AndroidPathEx.HasSDCard);
+		Debug.Log ("isExternalStorageRemovable:" + Vgame.ToolKit.AndroidPathEx.IsExternalStorageRemovable);
+		Debug.Log ("getRootDirectory:" + Vgame.ToolKit.AndroidPathEx.RootDir);
+		Debug.Log ("getFilesDir:" + Vgame.ToolKit.AndroidPathEx.FilesDir);
+		Debug.Log ("getExternalFilesDir:" + Vgame.ToolKit.AndroidPathEx.ExternalFilesDir);
+//		Debug.Log ("getExternalCacheDir:" + Vgame.ToolKit.AndroidPathEx.ExternalCacheDir);
+//		Debug.Log ("getCacheDir:" + Vgame.ToolKit.AndroidPathEx.CacheDir);
+//		Debug.Log ("getDataDirectory:" + Vgame.ToolKit.AndroidPathEx.DataDir);
+//		Debug.Log ("getDownloadCacheDirectory:" + Vgame.ToolKit.AndroidPathEx.DownloadCacheDir);
+//		Debug.Log ("getExternalStorageDirectory:" + Vgame.ToolKit.AndroidPathEx.ExternalStorageDir);
+//		Debug.Log ("getExternalStoragePublicDirectory:" + ac.CallStatic<string> ("getExternalStoragePublicDirectory"));
+		WxAPIController.Instance.RegToWx ();
 	}
 
 	public void hhs ()
@@ -51,7 +52,8 @@ public class Begin : MonoBehaviour
 //			MM_IAPController.Instance.Order ("30000918400401", 1, onback);
 //			AndroidJavaClass ac = new AndroidJavaClass ("com.iap.cm.IAP_CM");
 //			ac.CallStatic ("order", "30000918400401", 1);
-			Egame_IAPController.Instance.Order ("TOOL1", "一小篮番茄", onback);
+			//Egame_IAPController.Instance.Order ("TOOL1", "一小篮番茄", onback);
+			WxAPIController.Instance.Login ();
 		}
 	}
 
